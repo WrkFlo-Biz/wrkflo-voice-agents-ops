@@ -38,3 +38,18 @@ Updated: 2026-03-03
 2. Re-run CT-010/CT-011 after Ellie search/finalize patch (5 simulation runs).
 3. Run 3 live widget calls and 3 live phone calls with real noise interruption scripts and capture `conv_...` IDs.
 4. Track failed-call ratio by version ID for 24 hours and compare against pre-patch baseline.
+
+## Postfix Incident Validation (conv_5601)
+
+- Incident: `conv_5601kjt8a4hvejv9c832qz40jaxa`
+- Root cause verified: ElevenLabs webhook tools were sending stale/invalid auth token (`401 unauthorized` on start/note/finalize/handoff).
+- Fix applied: re-bound all webhook tools to active Azure `webhook-token` and patched Eden widget handoff policy (`WIDGET_HANDOFF_PATH_V48`).
+- Tool dedupe applied: removed 4 legacy duplicate tool IDs; both agents now use canonical 7 custom tools.
+
+Evidence:
+- [postfix-tool-validation-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/postfix-tool-validation-2026-03-03.json)
+
+Post-fix results:
+- Webhook smoke: `start`, `note`, `finalize`, `widget-human-handoff` all `ok=true`.
+- Simulation: no unauthorized tool errors in Eden/Ellie regression scenarios.
+- Booking strong-intent simulation: `check_availability` + `book_meeting` both invoked without tool errors.

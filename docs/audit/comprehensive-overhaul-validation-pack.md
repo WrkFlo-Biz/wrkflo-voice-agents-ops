@@ -9,6 +9,8 @@ Updated: 2026-03-03
 - Live notes webhook flow is functioning (`start -> note -> finalize`) with successful doc creation and finalize path.
 - Eden workflow node token ceilings were raised (`max_tokens=140`) and noise/repetition guard block added.
 - Eden workflow node model drift was corrected from `glm-45-air-fp8` to `gpt-5.2`.
+- Post-incident auth mismatch (`conv_5601...`) was remediated by rebinding webhook tool auth to active Azure secret.
+- Legacy duplicate tool objects were removed; canonical custom tool set is now 7.
 
 ### What remains broken or incomplete
 - Booking flow tool invocation is still not reliably triggered in simulation for Eden.
@@ -17,6 +19,10 @@ Updated: 2026-03-03
 - End-call tool triggering remains inconsistent across simulated close intents.
 - Monitoring is still disabled for both agents.
 - MCP servers are not attached to either agent (if expected by design).
+
+Channel policy note:
+- Ellie (phone/Twilio) should retain `transfer_to_number`.
+- Eden (widget) should prioritize `request_live_human_handoff` callback flow.
 
 ### Highest-risk current gaps
 1. Tool-routing mismatches (booking/search/finalize) under active prompts/workflow nodes.
@@ -98,4 +104,3 @@ Execution artifacts:
 - Confidence in webhook health and auth findings: high (0.97+)
 - Confidence in simulation-based routing findings: high (0.84–0.90)
 - Access gap: no direct, complete Supabase/Resend/Figma source-path verification in this pass
-

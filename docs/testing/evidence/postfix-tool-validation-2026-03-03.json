@@ -1,0 +1,93 @@
+{
+  "updated_at_utc": "2026-03-03T17:00:00Z",
+  "incident": {
+    "conversation_id": "conv_5601kjt8a4hvejv9c832qz40jaxa",
+    "agent": "Eden",
+    "observed_failures": [
+      "workspace_live_demo_start returned 401 unauthorized",
+      "workspace_live_demo_note returned 401 unauthorized",
+      "request_live_human_handoff returned 401 unauthorized",
+      "transfer_to_number invoked in widget context and failed"
+    ],
+    "root_cause": "ElevenLabs webhook tools used stale/incorrect x-webhook-token relative to active Azure webhook-token secret"
+  },
+  "fixes_applied": {
+    "tool_auth_rebind": {
+      "status": "done",
+      "tools": [
+        "tool_0201kjqgndtce4attr2c3az6sn67",
+        "tool_2601kjqgndtbf6bt6858es86acde",
+        "tool_7101kjqgndtafm18ctmh8xgvm31w",
+        "tool_0801kjqgndtdfwcbp0nz75n0h94d"
+      ],
+      "patch_http": 200,
+      "header_mode": "literal x-webhook-token set to active Azure secret value"
+    },
+    "eden_prompt_handoff_guard": {
+      "status": "done",
+      "block": "WIDGET_HANDOFF_PATH_V48",
+      "published_version": "agtvrsn_8401kjta1451f30a6sm58yfd5560"
+    },
+    "tool_dedup_cleanup": {
+      "status": "done",
+      "deleted_tool_ids": [
+        "tool_7501kjnn2dtje2c92s85h40nqa56",
+        "tool_8201kjnn2dtket586tj9x4hx17tw",
+        "tool_9501kjepdsgyfmwvmb5phqtaqmpa",
+        "tool_7701kjnn4ew6er6ra35adfk23bc0"
+      ],
+      "delete_http": 204,
+      "remaining_custom_tools": 7
+    }
+  },
+  "azure_state_verified": {
+    "container_app": "wrkflo-google-webhooks",
+    "revision": "wrkflo-google-webhooks--0000070",
+    "env": {
+      "LIVE_DEMO_REQUIRE_EXPLICIT_START": "false",
+      "LIVE_DEMO_START_ASYNC": "true",
+      "LIVE_DEMO_START_TIMEOUT_MS": "15000",
+      "LIVE_DEMO_DOC_OP_TIMEOUT_MS": "12000"
+    }
+  },
+  "postfix_validation": {
+    "webhook_smoke": {
+      "start": "ok=true",
+      "note": "ok=true",
+      "finalize": "ok=true",
+      "handoff": "ok=true"
+    },
+    "simulation_cases": [
+      {
+        "label": "eden_live_notes_finalize",
+        "unauthorized_errors": 0,
+        "tool_errors": [],
+        "tools_seen": ["workspace_live_demo_start", "workspace_live_demo_note"]
+      },
+      {
+        "label": "eden_human_handoff",
+        "unauthorized_errors": 0,
+        "tool_errors": [],
+        "tools_seen": ["workspace_live_demo_start", "request_live_human_handoff", "workspace_live_demo_note"]
+      },
+      {
+        "label": "eden_search",
+        "unauthorized_errors": 0,
+        "tool_errors": [],
+        "tools_seen": ["workspace_live_demo_start", "exa_search", "workspace_live_demo_note"]
+      },
+      {
+        "label": "ellie_booking_strong_intent",
+        "unauthorized_errors": 0,
+        "tool_errors": [],
+        "tools_seen": ["workspace_live_demo_start", "workspace_live_demo_note", "check_availability", "book_meeting"]
+      },
+      {
+        "label": "ellie_search",
+        "unauthorized_errors": 0,
+        "tool_errors": [],
+        "tools_seen": ["workspace_live_demo_start", "workspace_live_demo_note", "exa_search"]
+      }
+    ]
+  }
+}
