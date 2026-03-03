@@ -1,0 +1,16 @@
+[
+  {
+    "agent_id": "agent_0601kja359hpeae8qfz7q40j7fhg",
+    "name": "Eden - Widget",
+    "mcp_server_ids": [],
+    "native_mcp_server_ids": [],
+    "monitoring_enabled": false
+  },
+  {
+    "agent_id": "agent_9601kjenmpbwewntb483he79nfvr",
+    "name": "Ellie - Phone",
+    "mcp_server_ids": [],
+    "native_mcp_server_ids": [],
+    "monitoring_enabled": false
+  }
+]

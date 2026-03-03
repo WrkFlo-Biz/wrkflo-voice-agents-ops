@@ -1,0 +1,115 @@
+[
+  {
+    "test": "eden_search_exa",
+    "ok": true,
+    "expected": [
+      "exa_search"
+    ],
+    "missing": [],
+    "called": [
+      "workspace_live_demo_start",
+      "exa_search",
+      "workspace_live_demo_note"
+    ],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "eden_booking_flow",
+    "ok": false,
+    "expected": [
+      "check_availability",
+      "book_meeting"
+    ],
+    "missing": [
+      "check_availability",
+      "book_meeting"
+    ],
+    "called": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note"
+    ],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "eden_live_notes_flow",
+    "ok": true,
+    "expected": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note",
+      "workspace_live_demo_finalize"
+    ],
+    "missing": [],
+    "called": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note",
+      "workspace_live_demo_finalize"
+    ],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "eden_end_call",
+    "ok": false,
+    "expected": [
+      "end_call"
+    ],
+    "missing": [
+      "end_call"
+    ],
+    "called": [],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "ellie_search_exa",
+    "ok": false,
+    "expected": [
+      "exa_search"
+    ],
+    "missing": [
+      "exa_search"
+    ],
+    "called": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note"
+    ],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "ellie_live_notes_flow",
+    "ok": false,
+    "expected": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note",
+      "workspace_live_demo_finalize"
+    ],
+    "missing": [
+      "workspace_live_demo_finalize"
+    ],
+    "called": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note"
+    ],
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "test": "ellie_end_call",
+    "ok": false,
+    "expected": [
+      "end_call"
+    ],
+    "missing": [
+      "end_call"
+    ],
+    "called": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note"
+    ],
+    "errorCount": 0,
+    "errors": []
+  }
+]
