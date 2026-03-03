@@ -1,0 +1,121 @@
+[
+  {
+    "test": "eden_search",
+    "ok": true,
+    "expected": [
+      "exa_search"
+    ],
+    "missing": [],
+    "called": [
+      "exa_search"
+    ],
+    "tool_call_count": 2
+  },
+  {
+    "test": "eden_booking",
+    "ok": true,
+    "expected": [
+      "check_availability",
+      "book_meeting"
+    ],
+    "missing": [],
+    "called": [
+      "book_meeting",
+      "check_availability",
+      "end_call",
+      "workspace_live_demo_finalize",
+      "workspace_live_demo_note",
+      "workspace_live_demo_start"
+    ],
+    "tool_call_count": 10
+  },
+  {
+    "test": "eden_notes_finalize",
+    "ok": false,
+    "expected": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note",
+      "workspace_live_demo_finalize"
+    ],
+    "missing": [
+      "workspace_live_demo_finalize"
+    ],
+    "called": [
+      "workspace_live_demo_note",
+      "workspace_live_demo_start"
+    ],
+    "tool_call_count": 3
+  },
+  {
+    "test": "eden_end_call",
+    "ok": true,
+    "expected": [
+      "end_call"
+    ],
+    "missing": [],
+    "called": [
+      "end_call",
+      "workspace_live_demo_start"
+    ],
+    "tool_call_count": 2
+  },
+  {
+    "test": "ellie_search",
+    "ok": true,
+    "expected": [
+      "exa_search"
+    ],
+    "missing": [],
+    "called": [
+      "exa_search"
+    ],
+    "tool_call_count": 3
+  },
+  {
+    "test": "ellie_booking",
+    "ok": true,
+    "expected": [
+      "check_availability",
+      "book_meeting"
+    ],
+    "missing": [],
+    "called": [
+      "book_meeting",
+      "check_availability",
+      "end_call",
+      "workspace_live_demo_finalize",
+      "workspace_live_demo_note",
+      "workspace_live_demo_start"
+    ],
+    "tool_call_count": 14
+  },
+  {
+    "test": "ellie_notes_finalize",
+    "ok": false,
+    "expected": [
+      "workspace_live_demo_start",
+      "workspace_live_demo_note",
+      "workspace_live_demo_finalize"
+    ],
+    "missing": [
+      "workspace_live_demo_note"
+    ],
+    "called": [
+      "workspace_live_demo_finalize",
+      "workspace_live_demo_start"
+    ],
+    "tool_call_count": 2
+  },
+  {
+    "test": "ellie_end_call",
+    "ok": true,
+    "expected": [
+      "end_call"
+    ],
+    "missing": [],
+    "called": [
+      "end_call"
+    ],
+    "tool_call_count": 1
+  }
+]
