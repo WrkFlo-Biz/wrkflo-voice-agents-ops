@@ -1,8 +1,20 @@
 # Residual Issues Matrix
 
-| ID | Issue | Status | Severity |
-|---|---|---|---|
-| RI-01 | Live config drift from parallel edits | Open | High |
-| RI-02 | Full audio/noise scenario validation pending live traces | Open | High |
-| RI-03 | Exa simulation path still differs from live behavior | Open | Medium |
-| RI-04 | Twilio trial constraints on transfer | Open | High |
+Updated: 2026-03-03
+
+| Issue ID | Symptom | Status | Evidence | Root Cause Category | Severity | Confidence | Next Action | Owner |
+|---|---|---|---|---|---|---|---|---|
+| RI-101 | Eden still occasionally emits style tags/odd spacing in simulation outputs | Improved but still present | Sim outputs from `/tmp/test_eden_after_sync.js`, `/tmp/test_eden_live_notes_now_regression.js` include `<Eden>[calm]` markers | Prompt / instruction conflict | High | 0.86 | Remove style-tag patterns from override prompts; retest with simulation + live call | Subagent A |
+| RI-102 | Eden was using workflow-node model drift (`glm-45-air-fp8`) despite top-level `gpt-5.2` | Fixed and verified | Patched to `gpt-5.2`; versions `agtvrsn_1501...` and `agtvrsn_3901...` | Conversation flow / config drift | Critical | 0.98 | Keep drift monitor on node-level `llm` field | Subagent B |
+| RI-103 | Booking flow does not consistently trigger `check_availability`/`book_meeting` in simulation | Still broken | `/tmp/tool_matrix_result.json` `eden_booking_flow` missing both tools | Tool binding / routing logic | High | 0.89 | Tighten booking trigger rules in prompt + workflow route condition; rerun scenario | Subagent D |
+| RI-104 | Ellie search scenario did not invoke `exa_search` in simulation | Still broken | `/tmp/tool_matrix_result.json` `ellie_search_exa` missing `exa_search` | Prompt / routing conflict | High | 0.87 | Port Eden search guard parity to Ellie active workflow nodes; retest | Subagent A |
+| RI-105 | Ellie live-notes flow sometimes misses finalize call | Improved but still present | `/tmp/tool_matrix_result.json` `ellie_live_notes_flow` missing `workspace_live_demo_finalize` | Tool-order policy / turn budget | High | 0.84 | Add explicit finalize-before-close rule in active node prompts; retest | Subagent D |
+| RI-106 | End-call tool not reliably triggered in simulations (both agents in some scenarios) | Intermittent / not reproducible | Tool matrix shows missing `end_call`; prior explicit-end sim passed | User behavior / ambiguous speech + turn policy | Medium | 0.68 | Add explicit close-intent regex policy and confirmatory path; run 5x repeated sim | Subagent B |
+| RI-107 | Legacy `prompt.tools` list and `tool_ids` both populated | Open (risk) | Agent snapshot shows `legacy_tools_count=13` while `tool_ids` active | Prompt/config drift risk | Medium | 0.77 | Migrate to single source of truth (`tool_ids` + built-in system tools), backup first | Subagent D |
+| RI-108 | Monitoring remains disabled for both agents | Still broken | `monitoring=false` in live snapshots | Observability gap | High | 0.96 | Enable monitoring for both agents and define alert thresholds | Subagent E |
+| RI-109 | Twilio transfer reliability constrained by account/state variability | Open | Prior telephony snapshots indicate transfer-path variability; ongoing initiated/failed mix in conversation history | Telephony / upstream dependency | High | 0.74 | Add transfer-path synthetic checks and callback fallback messaging | Subagent D |
+| RI-110 | MCP tools expected by operator, but no MCP servers attached to either agent | Still broken (expectation mismatch) | `mcp_server_ids=[]`, `native_mcp_server_ids=[]` for both agents | Configuration / scope mismatch | Medium | 0.95 | Clarify MCP requirement and attach required MCP servers if intended | Subagent F |
+| RI-111 | Webhook auth enforcement previously suspected weak; now verified | Fixed and verified | Unauthorized `/start` returns `401`; authorized path succeeds | Auth / permissions | High | 0.99 | Keep periodic auth smoke test in runbook | Subagent E |
+| RI-112 | Handoff webhook requires callback number and currently fails safely without one | Fixed and verified (safe failure) | `/widget-human-handoff` returns `needsCallbackNumber=true` | Tool input validation | Medium | 0.97 | Keep validation; improve user-facing retry phrasing | Subagent D |
+| RI-113 | Recent historical failed-call cluster still exists in conversation history | Improved but still present | Conversation list shows mix of `done` + historical `failed` calls | Multi-factor historical regression | High | 0.88 | Track failure rate by version ID post-patch for 24h | Subagent L |
+| RI-114 | Supabase and Resend were requested scope, but stack currently uses Azure Table + Gmail flow | Unknown (missing access / likely N/A) | Current backend endpoints and configs reference Azure/Google path; no active Supabase/Resend artifacts found in this sweep | Unknown (needs more evidence) | Low | 0.72 | Confirm architecture intent; document if Supabase/Resend are inactive by design | Subagent F/G |
