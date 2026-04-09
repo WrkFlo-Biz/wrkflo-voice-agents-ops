@@ -1,11 +1,13 @@
 # Prioritized Action Plan
 
 ## Immediate
-1. Keep Eden/Ellie config locked to prevent drift.
-2. Validate new live call traces for interruption/search behavior.
-3. Monitor tool-call outcomes (search/start/note/finalize/handoff).
+1. Reconcile the March 3 contingency report with the later evidence pack.
+2. Fix live-notes finalize reliability in Eden and Ellie.
+3. Turn monitoring on for both agents and define alert thresholds.
+4. Decide whether MCP servers are required; if yes, attach them.
+5. Resolve the Twilio trial verified-number handoff constraint.
 
 ## This week
-1. Add drift guard automation and alerting.
-2. Complete full manual audio-environment test matrix.
-3. Complete Twilio production verification path.
+1. Keep drift-guard automation and node-level config audits in place.
+2. Re-run live widget and phone validation on notes-finalize and handoff paths.
+3. Track failed-call ratio and tool-call success rates by version ID.

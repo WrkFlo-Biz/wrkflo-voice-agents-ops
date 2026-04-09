@@ -1,7 +1,13 @@
 # Azure Audit Summary
 
+## Current live state
+
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
+- Latest revision: `wrkflo-google-webhooks--0000072`
+- Traffic: `100%` to latest revision
+- Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`
+- `HANDOFF_AGENT_ID`: `agent_9601kjenmpbwewntb483he79nfvr`
 - Health endpoint observed healthy.
 
 ## Notable runtime settings
