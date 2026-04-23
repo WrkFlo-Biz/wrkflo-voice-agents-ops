@@ -11,7 +11,7 @@ Updated: 2026-03-03
 - Eden workflow node model drift was corrected from `glm-45-air-fp8` to `gpt-5.2`.
 - Post-incident auth mismatch (`conv_5601...`) was remediated by rebinding webhook tool auth to active Azure secret.
 - Legacy duplicate tool objects were removed; canonical custom tool set is now 7.
-- Later evidence confirms booking, search, and end-call regression cases are passing in simulation again. See [tool-matrix-v3-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/tool-matrix-v3-2026-03-03.json) and [postfix-tool-validation-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/postfix-tool-validation-2026-03-03.json).
+- Later evidence confirms booking, search, and end-call regression cases are passing in simulation again. See [tool-matrix-v3-2026-03-03.json](docs/testing/evidence/tool-matrix-v3-2026-03-03.json) and [postfix-tool-validation-2026-03-03.json](docs/testing/evidence/postfix-tool-validation-2026-03-03.json).
 
 ### What remains broken or incomplete
 - Live-notes finalize can still be missed in some Eden/Ellie notes scenarios.
@@ -38,10 +38,10 @@ Assigned subagents for the final three tasks:
 3. `Subagent J` — Documentation updates + registries + audit artifact updates.
 
 Execution artifacts:
-- Task registry: [task-ownership-registry.md](/tmp/wrkflo-voice-agents-ops/docs/audit/task-ownership-registry.md)
-- Lock registry: [resource-lock-registry.md](/tmp/wrkflo-voice-agents-ops/docs/audit/resource-lock-registry.md)
-- Residual matrix: [residual-issues-matrix.md](/tmp/wrkflo-voice-agents-ops/docs/audit/residual-issues-matrix.md)
-- Contingency results: [contingency-test-results.md](/tmp/wrkflo-voice-agents-ops/docs/testing/contingency-test-results.md)
+- Task registry: [task-ownership-registry.md](docs/audit/task-ownership-registry.md)
+- Lock registry: [resource-lock-registry.md](docs/audit/resource-lock-registry.md)
+- Residual matrix: [residual-issues-matrix.md](docs/audit/residual-issues-matrix.md)
+- Contingency results: [contingency-test-results.md](docs/testing/contingency-test-results.md)
 
 ## 3) Systems Inventory (Current Reachability)
 
@@ -68,11 +68,11 @@ Execution artifacts:
 
 ### Task 1: Build Residual Issues Matrix
 - Completed with evidence-backed status categories and root-cause taxonomy.
-- Output: [residual-issues-matrix.md](/tmp/wrkflo-voice-agents-ops/docs/audit/residual-issues-matrix.md)
+- Output: [residual-issues-matrix.md](docs/audit/residual-issues-matrix.md)
 
 ### Task 2: Run Contingency + Scenario Sweep
 - Completed API/webhook/simulation batch with pass/fail matrix.
-- Output: [contingency-test-results.md](/tmp/wrkflo-voice-agents-ops/docs/testing/contingency-test-results.md)
+- Output: [contingency-test-results.md](docs/testing/contingency-test-results.md)
 
 ### Task 3: Deliver Consolidated Verification Pack
 - Completed with prioritized actions, risks, and 24h follow-up plan.

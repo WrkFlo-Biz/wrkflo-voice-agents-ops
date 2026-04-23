@@ -2,7 +2,7 @@
 
 Updated: 2026-03-03
 
-> Status note (2026-04-09): this is a dated baseline from the March 3 contingency sweep. Later evidence in [tool-matrix-v3-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/tool-matrix-v3-2026-03-03.json) and [postfix-tool-validation-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/postfix-tool-validation-2026-03-03.json) supersedes several of the failures below. Use this file as a historical snapshot, not the live source of truth.
+> Status note (2026-04-09): this is a dated baseline from the March 3 contingency sweep. Later evidence in [tool-matrix-v3-2026-03-03.json](docs/testing/evidence/tool-matrix-v3-2026-03-03.json) and [postfix-tool-validation-2026-03-03.json](docs/testing/evidence/postfix-tool-validation-2026-03-03.json) supersedes several of the failures below. Use this file as a historical snapshot, not the live source of truth.
 
 ## Summary
 
@@ -39,7 +39,7 @@ Updated: 2026-03-03
 
 ## Immediate 24h Follow-Up Tests
 
-These were the follow-up items from the March 3 sweep. See [comprehensive-overhaul-validation-pack.md](/tmp/wrkflo-voice-agents-ops/docs/audit/comprehensive-overhaul-validation-pack.md) for the current action list.
+These were the follow-up items from the March 3 sweep. See [comprehensive-overhaul-validation-pack.md](docs/audit/comprehensive-overhaul-validation-pack.md) for the current action list.
 
 1. Re-run CT-008 after booking-trigger patch (5 simulation runs).
 2. Re-run CT-010/CT-011 after Ellie search/finalize patch (5 simulation runs).
@@ -54,7 +54,7 @@ These were the follow-up items from the March 3 sweep. See [comprehensive-overha
 - Tool dedupe applied: removed 4 legacy duplicate tool IDs; both agents now use canonical 7 custom tools.
 
 Evidence:
-- [postfix-tool-validation-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/postfix-tool-validation-2026-03-03.json)
+- [postfix-tool-validation-2026-03-03.json](docs/testing/evidence/postfix-tool-validation-2026-03-03.json)
 
 Post-fix results:
 - Webhook smoke: `start`, `note`, `finalize`, `widget-human-handoff` all `ok=true`.
