@@ -31,7 +31,7 @@ The gateway catalog and MCP endpoints use the same header when `WEBHOOK_TOKEN` i
 
 `/wrkflo-tools` behavior:
 - `wrkflo_search`: WrkFlo-owned search gateway. Uses `WRKFLO_SEARCH_ENDPOINT` when configured, otherwise falls back to DuckDuckGo Instant Answer and then a safe unavailable response.
-- `wrkflo_orchestrate`: routes complex requests through Azure OpenAI when `AZURE_OPENAI_*` vars are configured, otherwise returns a safe rule-router response.
+- `wrkflo_orchestrate`: routes complex requests through Azure OpenAI when `AZURE_OPENAI_*` vars are configured, selecting a configured deployment profile by request shape, otherwise returns a safe rule-router response.
 - `wrkflo_notes_finalize`: wraps the existing notes finalizer for REST/MCP callers.
 
 `/mcp` implements a minimal JSON-RPC MCP tools surface for `initialize`, `tools/list`, and `tools/call`.
@@ -157,5 +157,14 @@ Local env vars:
 - `WRKFLO_SEARCH_API_KEY` (optional)
 - `AZURE_OPENAI_ENDPOINT` (optional)
 - `AZURE_OPENAI_API_KEY` (optional)
-- `AZURE_OPENAI_DEPLOYMENT` (optional)
-- `AZURE_OPENAI_API_VERSION` (default: `2024-10-21`)
+- `AZURE_OPENAI_DEPLOYMENT` (legacy/default fallback, optional)
+- `AZURE_OPENAI_DEFAULT_DEPLOYMENT` (default route, optional)
+- `AZURE_OPENAI_PREMIUM_DEPLOYMENT` (strategy/architecture route, optional)
+- `AZURE_OPENAI_FAST_DEPLOYMENT` (classification/extraction/short-work route, optional)
+- `AZURE_OPENAI_REASONING_DEPLOYMENT` (debug/math/multi-step route, optional)
+- `AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT` (deep research/root-cause route, optional)
+- `AZURE_OPENAI_CODEX_DEPLOYMENT` (coding/repo/CI route, optional)
+- `AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT` (reserved for retrieval/search expansion, optional)
+- `AZURE_OPENAI_MODEL_ROUTER_ENABLED` (default: `true`)
+- `AZURE_OPENAI_API_VERSION` (default: `2025-04-01-preview`)
+- `AZURE_OPENAI_MAX_OUTPUT_TOKENS` (default: `300`)

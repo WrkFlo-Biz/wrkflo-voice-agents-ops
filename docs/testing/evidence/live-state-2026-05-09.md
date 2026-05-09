@@ -32,10 +32,10 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000077`
+- Latest revision: `wrkflo-google-webhooks--0000078`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`
 - Registry server: `cafe61646254acr.azurecr.io`
 
 ## `wrkflo-ai-rg` Runtime Dependencies
@@ -76,6 +76,12 @@ Post-managed-identity deploy health response:
 {"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:53:35.782Z","sessionStore":"azure-table","sessionStoreOk":true,"handoffEnabled":true}
 ```
 
+Post-router deploy health response:
+
+```json
+{"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:55:59.872Z","sessionStore":"azure-table","sessionStoreOk":true,"azureOpenAIConfigured":true,"azureOpenAIDefaultDeployment":"gpt-5.4-mini","azureOpenAIModelRouterEnabled":true,"handoffEnabled":true}
+```
+
 ## Azure Runtime Env Summary
 
 Plain env values observed:
@@ -97,8 +103,17 @@ Plain env values observed:
 - `LIVE_DEMO_DOC_OP_TIMEOUT_MS=12000`
 - `INTERNAL_NOTES_EMAIL=wrkflo.biz@gmail.com`
 - `AZURE_OPENAI_ENDPOINT=https://wrkflobiz.cognitiveservices.azure.com/`
-- `AZURE_OPENAI_DEPLOYMENT=gpt-4o`
-- `AZURE_OPENAI_API_VERSION=2024-10-21`
+- `AZURE_OPENAI_DEPLOYMENT=gpt-5.4-mini`
+- `AZURE_OPENAI_API_VERSION=2025-04-01-preview`
+- `AZURE_OPENAI_DEFAULT_DEPLOYMENT=gpt-5.4-mini`
+- `AZURE_OPENAI_PREMIUM_DEPLOYMENT=wrkflo-premium-gpt-5.4`
+- `AZURE_OPENAI_FAST_DEPLOYMENT=gpt-5.4-nano`
+- `AZURE_OPENAI_REASONING_DEPLOYMENT=o4-mini`
+- `AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT=o3`
+- `AZURE_OPENAI_CODEX_DEPLOYMENT=gpt-5.3-codex`
+- `AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT=text-embedding-3-large`
+- `AZURE_OPENAI_MODEL_ROUTER_ENABLED=true`
+- `AZURE_OPENAI_MAX_OUTPUT_TOKENS=300`
 
 Secret refs observed:
 
@@ -109,7 +124,7 @@ Secret refs observed:
 - `azure-storage-connection-string`
 - `elevenlabs-api-key`
 - `azure-openai-api-key`
-- ACR registry password secret: `cafe61646254acrazurecrio-cafe61646254acr`
+- Legacy ACR registry password secret still present but no longer used by registry auth: `cafe61646254acrazurecrio-cafe61646254acr`
 
 `WRKFLO_SEARCH_ENDPOINT` is not configured.
 
@@ -144,7 +159,8 @@ Verified Eden GitHub deploy:
 - The deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
 - Manual Deploy Eden Gateway run `25612717893` succeeded after switching registry auth to managed identity.
 - The identity-backed deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`.
-- Azure revision `wrkflo-google-webhooks--0000077` is running and receiving `100%` traffic.
+- A follow-up router deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`.
+- Azure revision `wrkflo-google-webhooks--0000078` is running and receiving `100%` traffic.
 - Production environment deployment branch policy now allows only the `main` branch.
 - `cafe61646254acr` admin user is disabled.
 
