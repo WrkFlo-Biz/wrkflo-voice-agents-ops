@@ -7,12 +7,12 @@ Updated: 2026-05-09
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
 - Runtime dependencies in `wrkflo-ai-rg`: `wrkflo-ai-env`, `cafe61646254acr`, `wrkflostate7091c86a`, `workspace-wrkfloairgAAkP`
-- Latest revision: `wrkflo-google-webhooks--0000078`
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`
+- Latest revision: `wrkflo-google-webhooks--0000079`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`
 - Traffic: `100%` to latest revision
 - Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`
 - `HANDOFF_AGENT_ID`: `agent_9601kjenmpbwewntb483he79nfvr`
-- Health endpoint observed healthy after the router deployment on 2026-05-09 at 21:55 UTC.
+- Health endpoint observed healthy after the GitHub-built router deployment on 2026-05-09 at 22:02 UTC.
 - Canonical GitHub repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`
 - Gateway source path: `services/eden-gateway`
 - Resource group tags applied on 2026-05-09: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
@@ -44,6 +44,7 @@ Updated: 2026-05-09
 - Main-branch Deploy Eden Gateway run `25612536914` succeeded and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
 - Manual Deploy Eden Gateway run `25612717893` succeeded after switching registry auth to managed identity and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`.
 - A follow-up router deployment updated the live image to `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`; this branch aligns that router source back into GitHub.
+- PR #2 merged to `main` at merge commit `17ebb7d`; Deploy Eden Gateway run `25612879618` succeeded and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`.
 
 ## Remaining infra follow-ups
 - Add production environment reviewers before routine production deploys.

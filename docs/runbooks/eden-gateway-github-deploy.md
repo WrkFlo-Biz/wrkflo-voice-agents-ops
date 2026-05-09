@@ -18,8 +18,8 @@ Azure Container App: wrkflo-google-webhooks
 ACR: cafe61646254acr
 Image repository: wrkflo-google-webhooks
 Health URL: https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
-Live revision: wrkflo-google-webhooks--0000078
-Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router
+Live revision: wrkflo-google-webhooks--0000079
+Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d
 ```
 
 ## Required GitHub Environments

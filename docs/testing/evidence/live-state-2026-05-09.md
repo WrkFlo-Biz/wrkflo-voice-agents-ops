@@ -32,10 +32,10 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000078`
+- Latest revision: `wrkflo-google-webhooks--0000079`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`
 - Registry server: `cafe61646254acr.azurecr.io`
 
 ## `wrkflo-ai-rg` Runtime Dependencies
@@ -80,6 +80,12 @@ Post-router deploy health response:
 
 ```json
 {"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:55:59.872Z","sessionStore":"azure-table","sessionStoreOk":true,"azureOpenAIConfigured":true,"azureOpenAIDefaultDeployment":"gpt-5.4-mini","azureOpenAIModelRouterEnabled":true,"handoffEnabled":true}
+```
+
+Post-GitHub-router deploy health response:
+
+```json
+{"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T22:02:00.970Z","sessionStore":"azure-table","sessionStoreOk":true,"azureOpenAIConfigured":true,"azureOpenAIDefaultDeployment":"gpt-5.4-mini","azureOpenAIModelRouterEnabled":true,"handoffEnabled":true}
 ```
 
 ## Azure Runtime Env Summary
@@ -160,7 +166,10 @@ Verified Eden GitHub deploy:
 - Manual Deploy Eden Gateway run `25612717893` succeeded after switching registry auth to managed identity.
 - The identity-backed deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`.
 - A follow-up router deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`.
-- Azure revision `wrkflo-google-webhooks--0000078` is running and receiving `100%` traffic.
+- PR #2 merged to `main` at merge commit `17ebb7d`.
+- Deploy Eden Gateway run `25612879618` succeeded on `main`.
+- The GitHub-built router deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`.
+- Azure revision `wrkflo-google-webhooks--0000079` is running and receiving `100%` traffic.
 - Production environment deployment branch policy now allows only the `main` branch.
 - `cafe61646254acr` admin user is disabled.
 
