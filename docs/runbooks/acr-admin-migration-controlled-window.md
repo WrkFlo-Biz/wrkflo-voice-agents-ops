@@ -29,9 +29,11 @@ openclaw-rg/wrkfloopenclawacr:
   wrkfloopenclawacrazurecrio-wrkfloopenclawacr.
 
 wrkflo-rg/wrkfloacr:
-  Duplicate registry. No active Azure Resource Graph consumer, no role
-  assignments, and no scoped tokens were found, but hidden CI, workstation, or
-  rollback consumers must still be ruled out before disabling admin.
+  Duplicate/legacy registry. No active Azure Resource Graph consumer beyond the
+  registry itself, no role assignments, and no scoped tokens were found, but it
+  still contains wrkflo-orchestrator images last pushed on 2026-04-30. Hidden
+  CI, workstation, or rollback consumers must still be ruled out before
+  disabling admin.
 ```
 
 ## Prechecks
@@ -266,18 +268,25 @@ Start and validate one more execution before disabling admin.
 ## Duplicate Registry Check
 
 For `wrkflo-rg/wrkfloacr`, do not migrate consumers because none were found in
-Azure Resource Graph and repository docs already mark it as duplicate. Before
-disabling admin, complete this owner check. A follow-up local search found stale
-`wrkfloacr.azurecr.io` and `wrkfloacr` references in
+Azure Resource Graph beyond the registry itself and repository docs already
+mark it as duplicate. Before disabling admin, complete this owner check. A
+follow-up preflight found `wrkflo-orchestrator:latest` and
+`wrkflo-orchestrator:6b140ec` in the registry, both last pushed on 2026-04-30.
+Local `wrkfloacr.azurecr.io` and `wrkfloacr` references also remain in
 `/Users/mosestut/projects/wrkflo-orchestrator`, including an old Kubernetes
-deployment example and setup script, so this is not a no-evidence change.
+deployment example, setup script, Redis operations docs, and tests, so this is
+not a no-evidence change.
 
 - Confirm no GitHub Actions, local workstation scripts, release rollback notes,
   or external vendors still use `wrkfloacr.azurecr.io`.
+- Confirm the two old `wrkflo-orchestrator` image tags are not needed for
+  rollback or historical release reconstruction.
 - Confirm no ACR tokens or role assignments appeared since the review.
 - Confirm re-enabling admin is an accepted rollback for this duplicate registry.
 
 ```bash
+az acr repository show-tags -g wrkflo-rg -n wrkfloacr \
+  --repository wrkflo-orchestrator --orderby time_desc --detail -o table
 az acr token list -g wrkflo-rg -r wrkfloacr -o table
 az role assignment list \
   --scope "$(az acr show -g wrkflo-rg -n wrkfloacr --query id -o tsv)" \
