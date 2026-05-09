@@ -207,6 +207,13 @@ Verified live image tool smoke:
 | Live tool call | `POST /wrkflo-tools/wrkflo_image_generate` returned `ok=true`, provider `azure_openai_image`, deployment `gpt-image-2`, count `1` |
 | Payload behavior | Default response omitted `b64_json`; metadata reported `b64JsonBytes=67416` and `b64JsonIncluded=false` |
 
+Verified live orchestration smoke after final docs merge:
+
+| Check | Result |
+|---|---|
+| Tool catalog | Authenticated `/wrkflo-tools/catalog` returned `wrkflo_search`, `wrkflo_orchestrate`, `wrkflo_image_generate`, and `wrkflo_notes_finalize` |
+| Live tool call | `POST /wrkflo-tools/wrkflo_orchestrate` returned HTTP `200`, `ok=true`, provider `azure_openai`, deployment `gpt-5.3-codex`, and a non-empty `agentMessage` |
+
 Verified WrkFlo placement:
 
 - `wrkflo-orchestrator` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:c377b3a`.
@@ -230,6 +237,7 @@ Verified Eden GitHub deploy:
 - Deploy Eden Gateway run `25613838990` succeeded on `main`.
 - The GitHub-built image-tool deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25613838990-f15f370`.
 - Azure revision `wrkflo-google-webhooks--0000081` is running and receiving `100%` traffic.
+- Live tool catalog, orchestration, and image-generation smokes passed after the GitHub-owned deployment, so `/Users/mosestut/workspace-google-webhooks` is archive-eligible pending explicit operator approval.
 - Production environment deployment branch policy now allows only the `main` branch.
 - `cafe61646254acr` admin user is disabled.
 

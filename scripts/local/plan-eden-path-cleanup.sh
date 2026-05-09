@@ -16,7 +16,8 @@ plan:
   Remove .DS_Store files from the canonical and legacy paths only.
 
 This script does not remove node_modules, env files, credentials, or the legacy
-gateway folder. Keep the legacy folder until GitHub deployment is proven healthy.
+gateway folder. Archive or remove the legacy folder only after explicit operator
+approval.
 USAGE
 }
 
@@ -80,7 +81,8 @@ No files changed.
 Safe optional cleanup:
   scripts/local/plan-eden-path-cleanup.sh --apply-ds-store-cleanup
 
-Do not remove $LEGACY_PATH until the GitHub deployment has succeeded and live
-ElevenLabs smoke tests are captured.
+GitHub deployment and live Eden tool smokes are proven. Do not remove
+$LEGACY_PATH without explicit operator approval; keep a rollback archive until
+the next production deploy is proven healthy.
 EOF
 fi

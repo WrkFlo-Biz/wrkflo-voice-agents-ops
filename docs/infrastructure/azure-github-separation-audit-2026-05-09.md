@@ -6,7 +6,7 @@ Scope: Azure subscription `Azure subscription 1`, GitHub org `WrkFlo-Biz`, and r
 
 ## Executive Summary
 
-Eden does not need a dedicated VM. It already has an acceptable Azure Container Apps boundary in `wrkflo-ai-rg`: one Container App, one managed environment, one ACR, one storage account, and one Log Analytics workspace. The Eden gateway source has been copied into `services/eden-gateway` under the enterprise GitHub account `WrkFlo-Biz/wrkflo-voice-agents-ops`. GitHub OIDC identity, environments, secrets, and variables are configured; the remaining ownership gap is proving the GitHub Actions deploy before retiring the legacy local folder at `/Users/mosestut/workspace-google-webhooks`.
+Eden does not need a dedicated VM. It already has an acceptable Azure Container Apps boundary in `wrkflo-ai-rg`: one Container App, one managed environment, one ACR, one storage account, and one Log Analytics workspace. The Eden gateway source has been copied into `services/eden-gateway` under the enterprise GitHub account `WrkFlo-Biz/wrkflo-voice-agents-ops`. GitHub OIDC identity, environments, secrets, and variables are configured; GitHub Actions deploys and live Eden tool smokes passed on 2026-05-09. The legacy local folder at `/Users/mosestut/workspace-google-webhooks` is now archive-eligible pending explicit operator approval.
 
 The broader cloud estate should be separated by project, connected only through explicit APIs and project-owned credentials. The highest-risk work is not resource moving; it is tagging, credential rotation, public exposure reduction, and repo/workflow ownership.
 
@@ -14,7 +14,7 @@ The broader cloud estate should be separated by project, connected only through 
 
 | Project | Current Azure groups | GitHub / local owner | Boundary status |
 |---|---|---|---|
-| Eden voice gateway | `wrkflo-ai-rg` | `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway`; legacy rollback copy at `/Users/mosestut/workspace-google-webhooks` | Runtime isolated, GitHub OIDC configured, first workflow deploy succeeded on 2026-05-09 |
+| Eden voice gateway | `wrkflo-ai-rg` | `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway`; legacy rollback copy at `/Users/mosestut/workspace-google-webhooks` | Runtime isolated, GitHub OIDC configured, GitHub deploys and live tool smokes succeeded on 2026-05-09 |
 | WrkFlo core / orchestrator / Langflow | `wrkflo`, `wrkflo-rg`, `wrkflo-dev` | `WrkFlo-Biz/wrkflo-orchestrator` | Mixed; `wrkflo` active, `wrkflo-rg` looks duplicate/future |
 | OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | `WrkFlo-Biz/openclaw-prod`, `global-sentinel`, `global-sentinel-azure-quantum` | Strong VM ownership, mixed research resources; focused RGs tagged |
 | AINIME / Isaac | `ainime_ua`, `rg-isaac` | No canonical visible `WrkFlo-Biz` repo found | Needs owner/repo decision |
@@ -160,7 +160,7 @@ Applied 2026-05-09 to focused groups:
 - Confirm `staging` and `production` GitHub environments remain configured.
 - Confirm Azure OIDC federated credentials and least-privilege role assignments remain configured.
 - Deploy to `wrkflo-ai-rg` first; rename/migrate only after CI is stable. The first main-branch deploy succeeded on 2026-05-09.
-- Retire `/Users/mosestut/workspace-google-webhooks` only after GitHub deployment and live ElevenLabs smoke tests pass.
+- Archive `/Users/mosestut/workspace-google-webhooks` after explicit operator approval; GitHub deployment and live Eden tool smokes passed on 2026-05-09.
 
 ### Phase 3: Hardening
 
