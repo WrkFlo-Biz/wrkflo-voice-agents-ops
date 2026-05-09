@@ -78,6 +78,18 @@ az webapp show -g "${AINIME_RG}" -n ainime-api \
   -o json > "${OUT_DIR}/ainime-api-egress.json"
 ```
 
+Observed 2026-05-09 preflight:
+
+- `ainime-web` and `ainime-api` are running and expose `DATABASE_URL` as an app setting name.
+- Both AINIME apps reported the same 31 possible outbound IP addresses.
+- `wrkflo-app` reported 31 possible outbound IP addresses; `wrkflo-app-dev` reported 22.
+- `wrkflo-orchestrator` and `wrkflo-orchestrator-staging` share Container Apps managed environment `wrkflo-env` and each reported 241 outbound IP addresses.
+- Azure Resource Graph found `wrkflo-orchestrator` referencing `wrkflo-db.postgres.database.azure.com`; it did not find an App Service resource reference to `ainime-server2.postgres.database.azure.com` beyond the PostgreSQL server resource itself.
+
+These counts make a public firewall allowlist noisy and fragile, especially for
+Container Apps. Prefer private networking for the production fix unless owners
+explicitly accept a temporary broad egress allowlist.
+
 Search Azure Resource Graph for additional references:
 
 ```bash
@@ -93,6 +105,7 @@ Use an interim public allowlist only if:
 - Every required client has known, owner-approved egress IPs.
 - Replacement rules can be added and validated before broad rules are removed.
 - Owners accept that App Service possible outbound IPs are broad and can change after plan, scale, or networking changes.
+- Owners accept that the current WrkFlo Container Apps environment reported 241 outbound IP addresses, making an interim public allowlist hard to review and maintain.
 
 Stop and choose private networking first if:
 

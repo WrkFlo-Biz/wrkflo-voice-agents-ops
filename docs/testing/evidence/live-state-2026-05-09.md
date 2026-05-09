@@ -276,6 +276,17 @@ Verified GitHub environment protection for `WrkFlo-Biz/wrkflo-orchestrator`:
 - Organization teams returned by API: none.
 - Required reviewers were not configured because there is no separate reviewer team or second human/admin collaborator.
 
+Verified Postgres firewall preflight:
+
+| Target | Observed state |
+|---|---|
+| `ainime-server2` | Public network access `Enabled`; rules still include `allow-all`, `174.199.35.193/32`, and Azure-services `0.0.0.0` |
+| `wrkflo-db` | Public network access `Enabled`; rule still includes Azure-services `0.0.0.0` |
+| `ainime-web` / `ainime-api` | Running App Services; `DATABASE_URL` setting name observed on `ainime-web`; both report 31 possible outbound IPs |
+| `wrkflo-app` / `wrkflo-app-dev` | Running App Services; `wrkflo-app` reports 31 possible outbound IPs and `wrkflo-app-dev` reports 22 |
+| `wrkflo-orchestrator` / staging | Container Apps share `wrkflo-env`; each reports 241 outbound IPs; env names include `WRKFLO_STATE_DB` and `WRKFLO_POSTGRES_URL` on production, `WRKFLO_STATE_DB` on staging |
+| Decision | Do not remove broad Postgres firewall rules until owners approve private networking or explicitly accept a large temporary public egress allowlist |
+
 ## Azure GitHub OIDC
 
 - App registration: `wrkflo-eden-gateway-github-actions`

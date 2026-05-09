@@ -81,7 +81,7 @@ Still gated:
 
 - Production environment required reviewers: blocked until a distinct reviewer account or team exists. `WrkFlo-Biz/wrkflo-voice-agents-ops` and `WrkFlo-Biz/wrkflo-orchestrator` production environments are branch-gated to `main`.
 - VM public NSG removal: blocked until at least one second operator device verifies Tailscale reachability and SSH.
-- Postgres firewall tightening: blocked until app DB egress or private networking is confirmed.
+- Postgres firewall tightening: blocked until app DB egress or private networking is confirmed. Follow-up preflight found broad public egress sets: 31 possible IPs for AINIME App Service, 31 for `wrkflo-app`, 22 for `wrkflo-app-dev`, and 241 for the shared WrkFlo Container Apps environment, so private networking is preferred over a large public allowlist.
 - Non-Eden ACR admin disablement: blocked until App Services / Container App job migrate off admin credential auth. `wrkflo-rg/wrkfloacr` remains the lowest-risk candidate, but stale local `wrkfloacr` references were found in `/Users/mosestut/projects/wrkflo-orchestrator`, so owner confirmation is still required.
 
 ## Do Not Touch Without Coordination

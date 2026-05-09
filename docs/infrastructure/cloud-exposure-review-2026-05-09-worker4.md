@@ -41,7 +41,7 @@ Evidence: `docs/testing/evidence/https-only-hardening-2026-05-09.md`.
 | `ainime_ua/isaac-server` | Disabled | Firewall rule operations are rejected because public access is disabled. | No exposure fix needed from this review. |
 | `wrkflo/wrkflo-db` | Enabled | Only an allow-Azure-services style rule `0.0.0.0` was found. | Controlled window. Replace broad Azure-services access with private networking or the minimum required app egress path. |
 
-AINIME web/API currently share the same App Service possible outbound IP set. That can support an interim firewall allowlist, but private networking is the better target because App Service possible outbound IPs are broad and can change with plan/network changes.
+AINIME web/API currently share the same App Service possible outbound IP set. A follow-up preflight found that set has 31 possible outbound IPs, while `wrkflo-app` has 31, `wrkflo-app-dev` has 22, and the shared WrkFlo Container Apps environment reports 241 outbound IPs. That can support an interim firewall allowlist only with explicit owner acceptance, but private networking is the better target because these public egress sets are broad and can change with plan, scale, or networking changes.
 
 ## Safe Versus Controlled-Window Fixes
 
