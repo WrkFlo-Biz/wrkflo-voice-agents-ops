@@ -19,7 +19,7 @@ Observed `WrkFlo-Biz` repos:
 | `WrkFlo-Biz/dev-workspace` | Public | `main` | Dev workspace VM tooling |
 | `WrkFlo-Biz/openclaw-prod` | Public | `main` | OpenClaw production VM/deploy automation |
 
-Branch protection status on `main` was `unprotected` for all six repos during this pass.
+Branch protection was applied to `main` for all six repos on 2026-05-09: one approving PR review is required for non-admin paths, stale reviews are dismissed, force-pushes and branch deletion are disabled, and conversation resolution is required.
 
 ## Local Repo Paths
 
@@ -94,7 +94,7 @@ Move workloads to managed identity pulls/pushes before disabling admin user.
 
 ### GitHub
 
-All checked `main` branches were unprotected:
+All checked `main` branches are protected as of 2026-05-09:
 
 - `wrkflo-voice-agents-ops`
 - `wrkflo-orchestrator`
@@ -103,4 +103,4 @@ All checked `main` branches were unprotected:
 - `dev-workspace`
 - `openclaw-prod`
 
-Add branch protection and production environment reviewers before relying on GitHub Actions as the sole deploy gate.
+Remaining GitHub hardening: add production environment reviewers where routine production deployment should require human approval.

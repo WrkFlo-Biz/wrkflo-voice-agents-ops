@@ -139,6 +139,15 @@ Verified Eden GitHub deploy:
 - Azure revision `wrkflo-google-webhooks--0000075` is running and receiving `100%` traffic.
 - Production environment deployment branch policy now allows only the `main` branch.
 
+Verified GitHub branch protection:
+
+- `main` is protected for `WrkFlo-Biz/wrkflo-voice-agents-ops`.
+- `main` is protected for `WrkFlo-Biz/wrkflo-orchestrator`.
+- `main` is protected for `WrkFlo-Biz/global-sentinel`.
+- `main` is protected for `WrkFlo-Biz/global-sentinel-azure-quantum`.
+- `main` is protected for `WrkFlo-Biz/dev-workspace`.
+- `main` is protected for `WrkFlo-Biz/openclaw-prod`.
+
 ## Azure GitHub OIDC
 
 - App registration: `wrkflo-eden-gateway-github-actions`
@@ -182,6 +191,8 @@ gh pr merge 1 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --merge
 gh run watch 25612536914 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --exit-status
 gh api -X PUT repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production
 gh api -X POST repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production/deployment-branch-policies
+gh api -X PUT repos/WrkFlo-Biz/<repo>/branches/main/protection
+gh api repos/WrkFlo-Biz/<repo>/branches/main
 az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
 az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
 az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active

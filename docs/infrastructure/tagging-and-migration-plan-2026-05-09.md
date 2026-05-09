@@ -68,9 +68,9 @@ These should be done in controlled windows because they can affect runtime acces
    - Rotate credential-looking values found in plain runtime env settings.
    - Move them to Container App secrets, App Service Key Vault references, or project Key Vaults.
 4. GitHub:
-   - Protect `main` for production repos.
-   - Add required reviews/checks.
-   - Add production environment reviewers.
+   - Done 2026-05-09: protect `main` for checked production repos.
+   - Done 2026-05-09: require one approving PR review for non-admin paths, dismiss stale reviews, block force-pushes/deletions, and require conversation resolution.
+   - Remaining: add production environment reviewers.
 5. ACR:
    - Move workloads to managed identity pulls.
    - Disable admin user after validation.

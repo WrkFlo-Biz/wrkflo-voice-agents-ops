@@ -14,7 +14,7 @@ The broader cloud estate should be separated by project, connected only through 
 
 | Project | Current Azure groups | GitHub / local owner | Boundary status |
 |---|---|---|---|
-| Eden voice gateway | `wrkflo-ai-rg` | `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway`; legacy rollback copy at `/Users/mosestut/workspace-google-webhooks` | Runtime isolated, GitHub OIDC configured, first workflow deploy still unproven |
+| Eden voice gateway | `wrkflo-ai-rg` | `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway`; legacy rollback copy at `/Users/mosestut/workspace-google-webhooks` | Runtime isolated, GitHub OIDC configured, first workflow deploy succeeded on 2026-05-09 |
 | WrkFlo core / orchestrator / Langflow | `wrkflo`, `wrkflo-rg`, `wrkflo-dev` | `WrkFlo-Biz/wrkflo-orchestrator` | Mixed; `wrkflo` active, `wrkflo-rg` looks duplicate/future |
 | OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | `WrkFlo-Biz/openclaw-prod`, `global-sentinel`, `global-sentinel-azure-quantum` | Strong VM ownership, mixed research resources; focused RGs tagged |
 | AINIME / Isaac | `ainime_ua`, `rg-isaac` | No canonical visible `WrkFlo-Biz` repo found | Needs owner/repo decision |
@@ -54,9 +54,10 @@ The broader cloud estate should be separated by project, connected only through 
    - `ainime-server2` has public network access enabled and an all-source firewall rule.
    - `wrkflo-db` has public network access enabled and an allow-Azure-services style rule.
 
-4. GitHub deploy protections are weak.
-   - Checked repos have unprotected `main`.
+4. GitHub deploy protections still need environment-level reviewers.
+   - Mitigated 2026-05-09: checked repos now have protected `main`.
    - `wrkflo-orchestrator` has `production` and `staging` environments without protection rules.
+   - `wrkflo-voice-agents-ops` production deploys are limited to the `main` branch, but required reviewers are not yet configured.
 
 5. Secret ownership is over-concentrated.
    - Public `openclaw-prod` has many repo secrets across Azure, AI providers, Gmail/Google, ElevenLabs, Slack, Telegram, and OpenClaw.
@@ -155,7 +156,7 @@ Applied 2026-05-09 to focused groups:
 - Confirm the enterprise remote remains `WrkFlo-Biz/wrkflo-voice-agents-ops`.
 - Confirm `staging` and `production` GitHub environments remain configured.
 - Confirm Azure OIDC federated credentials and least-privilege role assignments remain configured.
-- Deploy to `wrkflo-ai-rg` first; rename/migrate only after CI is stable.
+- Deploy to `wrkflo-ai-rg` first; rename/migrate only after CI is stable. The first main-branch deploy succeeded on 2026-05-09.
 - Retire `/Users/mosestut/workspace-google-webhooks` only after GitHub deployment and live ElevenLabs smoke tests pass.
 
 ### Phase 3: Hardening
@@ -163,7 +164,7 @@ Applied 2026-05-09 to focused groups:
 - Replace temporary trusted-IP VM ingress with Tailscale, Bastion, VPN, or another stable access path.
 - Remove all-source Postgres firewall rules.
 - Move plain credential env settings to secret refs or Key Vault refs.
-- Enable branch protection and production environment reviewers.
+- Add production environment reviewers where production deploys should require human approval.
 - Switch ACR pulls to managed identity and disable ACR admin users.
 - Enable HTTPS-only on `Isaac`, `ainime-web`, and `ainime-api`.
 - Restrict Key Vault and storage public network access where feasible.
