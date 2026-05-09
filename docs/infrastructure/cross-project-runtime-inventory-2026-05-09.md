@@ -76,15 +76,15 @@ Remove broad database exposure only after confirming dependent app egress and mi
 
 ### ACR
 
-The checked ACRs all have admin user enabled and public network access enabled:
+The checked ACRs have public network access enabled. Admin user status after 2026-05-09 hardening:
 
-- `wrkflo-ai-rg/cafe61646254acr`
-- `wrkflo/wrkfloacr637a2eee`
-- `wrkflo-rg/wrkfloacr`
-- `openclaw-rg/wrkfloopenclawacr`
-- `ainime_ua/ainimeuaacr`
+- `wrkflo-ai-rg/cafe61646254acr`: admin user disabled; Eden pulls with system-assigned managed identity and `AcrPull`.
+- `wrkflo/wrkfloacr637a2eee`: admin user still enabled.
+- `wrkflo-rg/wrkfloacr`: admin user still enabled.
+- `openclaw-rg/wrkfloopenclawacr`: admin user still enabled.
+- `ainime_ua/ainimeuaacr`: admin user still enabled.
 
-Move workloads to managed identity pulls/pushes before disabling admin user.
+Move the remaining workloads to managed identity pulls/pushes before disabling their ACR admin users.
 
 ### App Services
 

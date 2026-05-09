@@ -63,9 +63,9 @@ The broader cloud estate should be separated by project, connected only through 
    - Public `openclaw-prod` has many repo secrets across Azure, AI providers, Gmail/Google, ElevenLabs, Slack, Telegram, and OpenClaw.
    - Cross-project secret names appear in WrkFlo App Service, AINIME apps, and OpenClaw repo settings.
 
-6. All ACR admin users are enabled.
-   - `ainimeuaacr`, `wrkfloopenclawacr`, `cafe61646254acr`, `wrkfloacr637a2eee`, and `wrkfloacr`.
-   - Eden currently pulls from ACR using a registry password secret.
+6. Most checked ACR admin users are enabled.
+   - Mitigated 2026-05-09: `cafe61646254acr` admin user is disabled and Eden now pulls with system-assigned managed identity plus `AcrPull`.
+   - Remaining enabled ACR admin users: `ainimeuaacr`, `wrkfloopenclawacr`, `wrkfloacr637a2eee`, and `wrkfloacr`.
 
 7. Key Vault and storage network posture needs tightening.
    - Key Vault public network access is enabled.
@@ -118,7 +118,7 @@ Allowed connections:
 
 - Do not delete or move resources until tagging is complete.
 - Do not change production secrets without a rotation window.
-- Do not disable ACR admin users until all pulls use managed identity or scoped credentials.
+- Do not disable remaining ACR admin users until their pulls use managed identity or scoped credentials.
 
 ### Phase 1: Tag And Document
 
@@ -165,7 +165,7 @@ Applied 2026-05-09 to focused groups:
 - Remove all-source Postgres firewall rules.
 - Move plain credential env settings to secret refs or Key Vault refs.
 - Add production environment reviewers where production deploys should require human approval.
-- Switch ACR pulls to managed identity and disable ACR admin users.
+- Switch remaining ACR pulls to managed identity and disable remaining ACR admin users.
 - Enable HTTPS-only on `Isaac`, `ainime-web`, and `ainime-api`.
 - Restrict Key Vault and storage public network access where feasible.
 

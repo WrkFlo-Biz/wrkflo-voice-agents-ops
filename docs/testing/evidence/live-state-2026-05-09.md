@@ -32,10 +32,10 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000075`
+- Latest revision: `wrkflo-google-webhooks--0000077`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`
 - Registry server: `cafe61646254acr.azurecr.io`
 
 ## `wrkflo-ai-rg` Runtime Dependencies
@@ -52,8 +52,8 @@ Resources currently in `wrkflo-ai-rg`:
 
 Dependency details:
 
-- ACR `cafe61646254acr`: Basic SKU, admin user enabled, login server `cafe61646254acr.azurecr.io`.
-- Container App registry pull still uses password secret `cafe61646254acrazurecrio-cafe61646254acr`.
+- ACR `cafe61646254acr`: Basic SKU, admin user disabled, login server `cafe61646254acr.azurecr.io`.
+- Container App registry pull uses system-assigned managed identity with `AcrPull`.
 - Storage account `wrkflostate7091c86a`: StorageV2, Standard_LRS, East US, blob public access disabled.
 - Log Analytics `workspace-wrkfloairgAAkP`: PerGB2018 SKU, 30-day retention.
 - Azure OpenAI endpoint `https://wrkflobiz.cognitiveservices.azure.com/` is outside `wrkflo-ai-rg`; it belongs to AI Services account `wrkflobiz` in resource group `Wrk`.
@@ -68,6 +68,12 @@ Post-deploy health response:
 
 ```json
 {"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:44:13.640Z","sessionStore":"azure-table","sessionStoreOk":true,"handoffEnabled":true}
+```
+
+Post-managed-identity deploy health response:
+
+```json
+{"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:53:35.782Z","sessionStore":"azure-table","sessionStoreOk":true,"handoffEnabled":true}
 ```
 
 ## Azure Runtime Env Summary
@@ -136,8 +142,11 @@ Verified Eden GitHub deploy:
 - Eden Gateway CI run `25612536913` succeeded on `main`.
 - Deploy Eden Gateway run `25612536914` succeeded on `main`.
 - The deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
-- Azure revision `wrkflo-google-webhooks--0000075` is running and receiving `100%` traffic.
+- Manual Deploy Eden Gateway run `25612717893` succeeded after switching registry auth to managed identity.
+- The identity-backed deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`.
+- Azure revision `wrkflo-google-webhooks--0000077` is running and receiving `100%` traffic.
 - Production environment deployment branch policy now allows only the `main` branch.
+- `cafe61646254acr` admin user is disabled.
 
 Verified GitHub branch protection:
 
@@ -193,6 +202,12 @@ gh api -X PUT repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production
 gh api -X POST repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production/deployment-branch-policies
 gh api -X PUT repos/WrkFlo-Biz/<repo>/branches/main/protection
 gh api repos/WrkFlo-Biz/<repo>/branches/main
+az containerapp identity assign --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --system-assigned
+az role assignment create --assignee f35c512d-9201-4741-a02f-9e024743f98e --role AcrPull --scope <cafe61646254acr-resource-id>
+az containerapp registry set --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --server cafe61646254acr.azurecr.io --identity system
+gh workflow run "Deploy Eden Gateway" --repo WrkFlo-Biz/wrkflo-voice-agents-ops --ref main -f environment=production
+gh run watch 25612717893 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --exit-status
+az acr update --resource-group wrkflo-ai-rg --name cafe61646254acr --admin-enabled false
 az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
 az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
 az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active

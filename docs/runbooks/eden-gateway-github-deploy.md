@@ -18,8 +18,8 @@ Azure Container App: wrkflo-google-webhooks
 ACR: cafe61646254acr
 Image repository: wrkflo-google-webhooks
 Health URL: https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
-Live revision: wrkflo-google-webhooks--0000075
-Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2
+Live revision: wrkflo-google-webhooks--0000077
+Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0
 ```
 
 ## Required GitHub Environments
@@ -187,7 +187,6 @@ curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontai
 After GitHub deployment works:
 
 1. Add required production environment reviewers.
-2. Assign managed identity to the Container App.
-3. Grant that identity `AcrPull` on `cafe61646254acr`.
-4. Move the Container App registry pull from admin credentials to managed identity.
-5. Disable ACR admin user only after image pulls are verified.
+2. Keep the Container App system-assigned identity and `AcrPull` assignment in place.
+3. Keep ACR admin disabled for `cafe61646254acr`.
+4. Remove the old unused Container App ACR password secret after a longer soak window confirms no rollback path depends on it.
