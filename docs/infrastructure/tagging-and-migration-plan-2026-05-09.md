@@ -74,6 +74,8 @@ These should be done in controlled windows because they can affect runtime acces
 5. ACR:
    - Move workloads to managed identity pulls.
    - Disable admin user after validation.
+6. App Service HTTPS:
+   - Done 2026-05-09: enabled HTTPS-only on `ainime-web`, `ainime-api`, and `openclaw-rg/Isaac`.
 
 ## Phase 4: Consolidation Decisions
 

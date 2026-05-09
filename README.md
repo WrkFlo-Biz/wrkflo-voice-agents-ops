@@ -23,6 +23,7 @@ Operational documentation and audit artifacts for Wrk.Flo voice agents:
 - Cross-project runtime inventory: `docs/infrastructure/cross-project-runtime-inventory-2026-05-09.md`
 - Runtime placement plan: `docs/infrastructure/project-runtime-placement-plan-2026-05-09.md`
 - Latest live-state evidence: `docs/testing/evidence/live-state-2026-05-09.md`
+- Latest HTTPS-only hardening evidence: `docs/testing/evidence/https-only-hardening-2026-05-09.md`
 - Current terminal coordination log: `docs/infrastructure/codex-terminal-coordination-2026-05-09.md`
 - Eden gateway deploy runbook: `docs/runbooks/eden-gateway-github-deploy.md`
 

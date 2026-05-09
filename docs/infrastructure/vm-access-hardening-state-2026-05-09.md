@@ -60,6 +60,17 @@ Only run NSG removal in a separate maintenance change:
 5. Verify `openclaw-gateway-vm` dashboard, OpenClaw gateway, and IBKR-required flows over Tailscale.
 6. Remove public inbound NSG rules one VM and one service class at a time, with rollback commands prepared.
 
+## Follow-Up Readiness Verification
+
+Additional non-destructive checks on 2026-05-09:
+
+- Primary Mac Tailscale ping succeeded to `dev-workspace-vm.tail18ff5a.ts.net` and `openclaw-gateway-vm.tail18ff5a.ts.net`.
+- `https://dev-workspace-vm.tail18ff5a.ts.net/orch/healthz` returned `status: ok`.
+- `openclaw-gateway-vm.tail18ff5a.ts.net` accepted Tailscale TCP connections on `443` and `18789`.
+- Azure Run Command succeeded on both VMs with `hostname; tailscale status --self`.
+
+Remaining gate before public NSG removal: verify Tailscale reachability and SSH from at least one second operator device, then run the public NSG removal runbook.
+
 ## Commands Used
 
 Representative read-only checks:
