@@ -9,7 +9,7 @@ Purpose: keep concurrent Eden voice-agent cleanup work from overwriting shared f
 Branch:
 
 ```text
-codex/reconcile-voice-agent-docs
+main
 ```
 
 Primary repo:
@@ -51,6 +51,38 @@ The other Eden voice-agent terminal should own:
 - Ellie no-search fallback tests.
 - Azure Container App runtime env discovery for search provider setup.
 - New test evidence files under `docs/testing/evidence/`.
+
+## Latest Handoff Update
+
+Updated after merge to `main` on 2026-05-09:
+
+```text
+Latest main commit observed: 607069a Merge pull request #5 from WrkFlo-Biz/codex/eden-model-router
+Latest hardening commit included: 5f3db31 docs: add controlled-window hardening runbooks
+Latest image deploy evidence commit included: 0ccac3d docs: record Eden image tool deploy evidence
+```
+
+Completed in the latest hardening pass:
+
+- Enabled HTTPS-only for `openclaw-rg/Isaac`, `ainime_ua/ainime-api`, and `ainime_ua/ainime-web`.
+- Verified the three App Services are `Running` with `httpsOnly=true`.
+- Added evidence at `docs/testing/evidence/https-only-hardening-2026-05-09.md`.
+- Added controlled-window runbooks:
+  - `docs/runbooks/postgres-firewall-controlled-window.md`
+  - `docs/runbooks/acr-admin-migration-controlled-window.md`
+  - `docs/runbooks/app-service-https-only-controlled-window.md`
+  - `docs/runbooks/vm-public-nsg-removal-controlled-window.md`
+- Verified Eden `/health` after the runbook/evidence update.
+- Verified VM readiness from the primary Mac: Tailscale ping, `dev-workspace-vm` `/orch/healthz`, OpenClaw Tailscale ports `443` and `18789`, and Azure Run Command on both VMs.
+
+Do not repeat or roll back those completed changes unless new evidence shows a regression.
+
+Still gated:
+
+- Production environment required reviewers: blocked until a distinct reviewer account or team exists.
+- VM public NSG removal: blocked until at least one second operator device verifies Tailscale reachability and SSH.
+- Postgres firewall tightening: blocked until app DB egress or private networking is confirmed.
+- Non-Eden ACR admin disablement: blocked until App Services / Container App job migrate off admin credential auth. `wrkflo-rg/wrkfloacr` remains the lowest-risk candidate, but stale local `wrkfloacr` references were found in `/Users/mosestut/projects/wrkflo-orchestrator`, so owner confirmation is still required.
 
 ## Do Not Touch Without Coordination
 
@@ -114,4 +146,4 @@ Do not delete `/Users/mosestut/workspace-google-webhooks` yet. Archive or remove
 
 Use `docs/runbooks/eden-gateway-github-deploy.md` for the exact environment secret, federated credential, role assignment, and rollback shape. `WrkFlo-Biz/wrkflo-voice-agents-ops` is the enterprise repo, and GitHub OIDC subjects use that owner/repo.
 
-As of 2026-05-09, the GitHub environments, Azure OIDC federated credentials, and least-privilege deploy role assignments are configured. The remaining unproven step is the first GitHub Actions deployment from `.github/workflows/eden-gateway-deploy.yml`.
+As of 2026-05-09, the GitHub environments, Azure OIDC federated credentials, and least-privilege deploy role assignments are configured. The first GitHub Actions deployments have succeeded, Eden is running from the GitHub-owned source path, and the remaining production deploy protection gap is required reviewers after a distinct reviewer account or team exists.
