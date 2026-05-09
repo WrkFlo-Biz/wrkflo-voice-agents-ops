@@ -20,6 +20,8 @@ Operational documentation and audit artifacts for Wrk.Flo voice agents:
 - GitHub OIDC deploy setup is configured; first workflow deployment is still pending.
 - Latest comprehensive report: `docs/audit/comprehensive-overhaul-validation-pack.md`
 - Latest Azure/GitHub separation audit: `docs/infrastructure/azure-github-separation-audit-2026-05-09.md`
+- Cross-project runtime inventory: `docs/infrastructure/cross-project-runtime-inventory-2026-05-09.md`
+- Runtime placement plan: `docs/infrastructure/project-runtime-placement-plan-2026-05-09.md`
 - Latest live-state evidence: `docs/testing/evidence/live-state-2026-05-09.md`
 - Current terminal coordination log: `docs/infrastructure/codex-terminal-coordination-2026-05-09.md`
 - Eden gateway deploy runbook: `docs/runbooks/eden-gateway-github-deploy.md`

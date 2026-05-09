@@ -98,3 +98,14 @@ It prints the current remote and the intended enterprise remote without changing
 ```bash
 scripts/local/plan-github-remote-reconcile.sh --apply
 ```
+
+Use this from the repo root to check local WrkFlo-related repo remotes and dirty worktrees:
+
+```bash
+scripts/local/plan-wrkflo-local-repos.sh
+```
+
+Current expected result:
+
+- `wrkflo-voice-agents-ops` is aligned to `WrkFlo-Biz`.
+- `dev-workspace`, `global-sentinel`, and `openclaw-prod` still point at `Wrk-Flo` remotes and have local changes, so do not rewrite their remotes until those worktrees are reviewed.

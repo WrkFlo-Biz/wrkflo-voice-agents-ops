@@ -84,6 +84,19 @@ Do not start resource moves until these decisions are made:
 4. Which AI Studio/Cognitive Services resources are live product dependencies versus lab resources?
 5. Is the dev workspace VM needed 24/7?
 
+## Runtime Placement Decision
+
+Use `project-runtime-placement-plan-2026-05-09.md` as the current placement guide.
+
+Short version:
+
+- Eden stays on Container Apps; no VM needed.
+- WrkFlo orchestrator stays on Container Apps.
+- WrkFlo web app can stay on App Service until container consolidation is intentional.
+- Dev workspace stays a VM, but SSH must be restricted.
+- OpenClaw keeps a VM only for OS-level gateway/trading dependencies; dashboards/APIs should move toward Container Apps.
+- AINIME/Isaac should not get new Container Apps until canonical repo ownership is known.
+
 ## Quarantine Candidates
 
 Tag first, wait 7-14 days, then delete only with owner approval.
