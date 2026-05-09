@@ -32,10 +32,10 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000080`
+- Latest revision: `wrkflo-google-webhooks--0000081`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25613838990-f15f370`
 - Registry server: `cafe61646254acr.azurecr.io`
 
 ## `wrkflo-ai-rg` Runtime Dependencies
@@ -86,6 +86,12 @@ Post-GitHub-router deploy health response:
 
 ```json
 {"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T22:02:00.970Z","sessionStore":"azure-table","sessionStoreOk":true,"azureOpenAIConfigured":true,"azureOpenAIDefaultDeployment":"gpt-5.4-mini","azureOpenAIModelRouterEnabled":true,"handoffEnabled":true}
+```
+
+Post-image-tool deploy health response:
+
+```json
+{"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T22:55:17.503Z","sessionStore":"azure-table","sessionStoreOk":true,"azureOpenAIConfigured":true,"azureOpenAIDefaultDeployment":"gpt-5.4-mini","azureOpenAIModelRouterEnabled":true,"azureOpenAIImageConfigured":true,"azureOpenAIImageDeployment":"gpt-image-2","handoffEnabled":true}
 ```
 
 ## Azure Runtime Env Summary
@@ -192,6 +198,14 @@ Verified Azure OpenAI image configuration:
 | `openclaw-gateway-vm` | Managed identity has `Cognitive Services OpenAI User` on `wrkflobiz-images-poland`; `/etc/profile.d/wrkflo-azure-openai.sh` exports non-secret image endpoint/deployment/API version |
 | `dev-workspace-vm` | Managed identity has `Cognitive Services OpenAI User` on `wrkflobiz-images-poland`; `/etc/profile.d/wrkflo-azure-openai.sh` exports non-secret image endpoint/deployment/API version |
 
+Verified live image tool smoke:
+
+| Check | Result |
+|---|---|
+| Tool catalog | `wrkflo_image_generate` is listed with `prompt`, `size`, `quality`, `n`, and `includeB64` inputs |
+| Live tool call | `POST /wrkflo-tools/wrkflo_image_generate` returned `ok=true`, provider `azure_openai_image`, deployment `gpt-image-2`, count `1` |
+| Payload behavior | Default response omitted `b64_json`; metadata reported `b64JsonBytes=67416` and `b64JsonIncluded=false` |
+
 Verified WrkFlo placement:
 
 - `wrkflo-orchestrator` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:c377b3a`.
@@ -211,6 +225,10 @@ Verified Eden GitHub deploy:
 - Deploy Eden Gateway run `25612879618` succeeded on `main`.
 - The GitHub-built router deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`.
 - Azure revision `wrkflo-google-webhooks--0000080` is running and receiving `100%` traffic after the ACR password secret cleanup revision.
+- PR #4 merged to `main` at merge commit `f15f370`.
+- Deploy Eden Gateway run `25613838990` succeeded on `main`.
+- The GitHub-built image-tool deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25613838990-f15f370`.
+- Azure revision `wrkflo-google-webhooks--0000081` is running and receiving `100%` traffic.
 - Production environment deployment branch policy now allows only the `main` branch.
 - `cafe61646254acr` admin user is disabled.
 
@@ -309,6 +327,8 @@ az cognitiveservices account deployment show --resource-group Wrk --name wrkflob
 az cognitiveservices usage list --location polandcentral
 az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --query "{revision:properties.latestRevisionName,image:properties.template.containers[0].image,env:properties.template.containers[0].env[?contains(name, 'IMAGE') || contains(name, 'AZURE_OPENAI')]}" -o json
 az containerapp secret list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
+curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/wrkflo-tools/catalog
+curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/wrkflo-tools/wrkflo_image_generate
 codex --profile wrkflo-image --version
 az role assignment list --assignee <vm-principal-id> --scope <wrkflobiz-images-poland-resource-id>
 az vm run-command invoke --resource-group <rg> --name <vm> --command-id RunShellScript --scripts "grep -E 'AZURE_OPENAI_IMAGE|gpt-image-2|wrkflobiz-images-poland' /etc/profile.d/wrkflo-azure-openai.sh"
