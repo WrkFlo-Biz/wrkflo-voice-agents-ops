@@ -56,7 +56,8 @@ The broader cloud estate should be separated by project, connected only through 
 
 4. GitHub deploy protections still need environment-level reviewers.
    - Mitigated 2026-05-09: checked repos now have protected `main`.
-   - `wrkflo-orchestrator` has `production` and `staging` environments without protection rules.
+   - Mitigated 2026-05-09: `wrkflo-orchestrator` production deploys are limited to the `main` branch.
+   - `wrkflo-orchestrator` staging has no deployment branch policy configured.
    - `wrkflo-voice-agents-ops` production deploys are limited to the `main` branch, but required reviewers are not yet configured.
 
 5. Secret ownership is over-concentrated.

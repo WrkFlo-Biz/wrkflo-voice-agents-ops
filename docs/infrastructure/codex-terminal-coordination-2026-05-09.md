@@ -79,7 +79,7 @@ Do not repeat or roll back those completed changes unless new evidence shows a r
 
 Still gated:
 
-- Production environment required reviewers: blocked until a distinct reviewer account or team exists.
+- Production environment required reviewers: blocked until a distinct reviewer account or team exists. `WrkFlo-Biz/wrkflo-voice-agents-ops` and `WrkFlo-Biz/wrkflo-orchestrator` production environments are branch-gated to `main`.
 - VM public NSG removal: blocked until at least one second operator device verifies Tailscale reachability and SSH.
 - Postgres firewall tightening: blocked until app DB egress or private networking is confirmed.
 - Non-Eden ACR admin disablement: blocked until App Services / Container App job migrate off admin credential auth. `wrkflo-rg/wrkfloacr` remains the lowest-risk candidate, but stale local `wrkfloacr` references were found in `/Users/mosestut/projects/wrkflo-orchestrator`, so owner confirmation is still required.

@@ -266,6 +266,16 @@ Verified GitHub environment protection for `WrkFlo-Biz/wrkflo-voice-agents-ops`:
 - Organization teams returned by API: none.
 - Required reviewers were not configured because there is no separate reviewer team or second human/admin collaborator. Setting `Wrk-Flo` as the only reviewer would be low-value and could couple deployment approval to the same admin account that operates the repo.
 
+Verified GitHub environment protection for `WrkFlo-Biz/wrkflo-orchestrator`:
+
+- `production` exists and has one protection rule: deployment branch policy.
+- `production` deployment branch policy uses custom branch policies and allows only branch `main`.
+- `production` has no required reviewer protection rule configured.
+- `staging` exists with no protection rules and no deployment branch policy configured.
+- Repository collaborators with access: `Wrk-Flo` only, with `admin` role.
+- Organization teams returned by API: none.
+- Required reviewers were not configured because there is no separate reviewer team or second human/admin collaborator.
+
 ## Azure GitHub OIDC
 
 - App registration: `wrkflo-eden-gateway-github-actions`
