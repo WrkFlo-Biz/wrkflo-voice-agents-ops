@@ -2,6 +2,8 @@
 
 Updated: 2026-03-03
 
+> Status note (2026-04-09): this is a dated baseline from the March 3 contingency sweep. Later evidence in [tool-matrix-v3-2026-03-03.json](docs/testing/evidence/tool-matrix-v3-2026-03-03.json) and [postfix-tool-validation-2026-03-03.json](docs/testing/evidence/postfix-tool-validation-2026-03-03.json) supersedes several of the failures below. Use this file as a historical snapshot, not the live source of truth.
+
 ## Summary
 
 - Executed scenarios: 13
@@ -29,10 +31,15 @@ Updated: 2026-03-03
 
 ## Additional Observations
 
+- This report predates the later tool-matrix and postfix-validation evidence.
+- CT-008, CT-010, and CT-012 are superseded by later passing evidence and should be treated as fixed.
+- CT-009 is contradicted by later evidence, which still shows notes-finalize can miss `workspace_live_demo_finalize`.
 - Ellie simulation still shows heavy use of filler phrase in some scenarios, even when duplicate exact lines are low.
 - Eden and Ellie remain vulnerable to config drift because node-level overrides can diverge from top-level settings.
 
 ## Immediate 24h Follow-Up Tests
+
+These were the follow-up items from the March 3 sweep. See [comprehensive-overhaul-validation-pack.md](docs/audit/comprehensive-overhaul-validation-pack.md) for the current action list.
 
 1. Re-run CT-008 after booking-trigger patch (5 simulation runs).
 2. Re-run CT-010/CT-011 after Ellie search/finalize patch (5 simulation runs).
@@ -47,7 +54,7 @@ Updated: 2026-03-03
 - Tool dedupe applied: removed 4 legacy duplicate tool IDs; both agents now use canonical 7 custom tools.
 
 Evidence:
-- [postfix-tool-validation-2026-03-03.json](/tmp/wrkflo-voice-agents-ops/docs/testing/evidence/postfix-tool-validation-2026-03-03.json)
+- [postfix-tool-validation-2026-03-03.json](docs/testing/evidence/postfix-tool-validation-2026-03-03.json)
 
 Post-fix results:
 - Webhook smoke: `start`, `note`, `finalize`, `widget-human-handoff` all `ok=true`.
