@@ -6,6 +6,7 @@ Updated: 2026-05-09
 
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
+- Runtime dependencies in `wrkflo-ai-rg`: `wrkflo-ai-env`, `cafe61646254acr`, `wrkflostate7091c86a`, `workspace-wrkfloairgAAkP`
 - Latest revision: `wrkflo-google-webhooks--0000074`
 - Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019`
 - Traffic: `100%` to latest revision
@@ -22,6 +23,7 @@ Updated: 2026-05-09
 - `/wrkflo-tools/*` and `/mcp` are deployed on the same Container App.
 - Azure OpenAI orchestration is configured with the `wrkflobiz` AI Services account and `gpt-4o` deployment.
 - `WRKFLO_SEARCH_ENDPOINT` is still not configured, so true web search still depends on the gateway's limited DuckDuckGo Instant Answer fallback or a future dedicated search provider.
+- Azure OpenAI endpoint is outside `wrkflo-ai-rg`: AI Services account `wrkflobiz` in resource group `Wrk`.
 - No plaintext secret values were returned by the live env check; credential-bearing settings are secret refs.
 
 ## GitHub deploy setup

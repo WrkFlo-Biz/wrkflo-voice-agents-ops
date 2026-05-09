@@ -38,6 +38,26 @@ This file captures read-only checks used to align repo docs with live GitHub, Az
 - Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019`
 - Registry server: `cafe61646254acr.azurecr.io`
 
+## `wrkflo-ai-rg` Runtime Dependencies
+
+Resources currently in `wrkflo-ai-rg`:
+
+| Resource | Type | Purpose |
+|---|---|---|
+| `wrkflo-google-webhooks` | `Microsoft.App/containerApps` | Live Eden/Ellie webhook and tools gateway |
+| `wrkflo-ai-env` | `Microsoft.App/managedEnvironments` | Container Apps managed environment for the gateway |
+| `cafe61646254acr` | `Microsoft.ContainerRegistry/registries` | Container image registry for `wrkflo-google-webhooks` images |
+| `wrkflostate7091c86a` | `Microsoft.Storage/storageAccounts` | Azure Table session state for live demo conversation/doc mapping |
+| `workspace-wrkfloairgAAkP` | `Microsoft.OperationalInsights/workspaces` | Log Analytics workspace for Container Apps environment logs |
+
+Dependency details:
+
+- ACR `cafe61646254acr`: Basic SKU, admin user enabled, login server `cafe61646254acr.azurecr.io`.
+- Container App registry pull still uses password secret `cafe61646254acrazurecrio-cafe61646254acr`.
+- Storage account `wrkflostate7091c86a`: StorageV2, Standard_LRS, East US, blob public access disabled.
+- Log Analytics `workspace-wrkfloairgAAkP`: PerGB2018 SKU, 30-day retention.
+- Azure OpenAI endpoint `https://wrkflobiz.cognitiveservices.azure.com/` is outside `wrkflo-ai-rg`; it belongs to AI Services account `wrkflobiz` in resource group `Wrk`.
+
 Health response:
 
 ```json
@@ -113,6 +133,11 @@ gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/actions/workflows
 az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
 az containerapp revision list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
 az containerapp secret list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
+az resource list --resource-group wrkflo-ai-rg
+az acr show --resource-group wrkflo-ai-rg --name cafe61646254acr
+az storage account show --resource-group wrkflo-ai-rg --name wrkflostate7091c86a
+az monitor log-analytics workspace show --resource-group wrkflo-ai-rg --workspace-name workspace-wrkfloairgAAkP
+az cognitiveservices account list --query "[?contains(endpoint || '', 'wrkflobiz') || name=='wrkflobiz']"
 az ad app federated-credential list --id 05605d80-1198-40f5-8767-aa6be2eaddb8
 curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
 ```

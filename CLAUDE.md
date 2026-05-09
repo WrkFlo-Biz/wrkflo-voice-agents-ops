@@ -27,5 +27,6 @@ Operational docs, audit artifacts, and Eden gateway source for Wrk.Flo ElevenLab
 - Canonical repo: WrkFlo-Biz/wrkflo-voice-agents-ops
 - Webhook backend: Azure Container App wrkflo-google-webhooks (revision 0000074)
 - Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019
+- Runtime Azure boundary: wrkflo-ai-rg contains the Container App, managed env, ACR, storage state account, and Log Analytics workspace.
 - Handoff agent: agent_9601kjenmpbwewntb483he79nfvr
 - GitHub OIDC deploy setup is configured for production and staging; first workflow deploy is still pending.
