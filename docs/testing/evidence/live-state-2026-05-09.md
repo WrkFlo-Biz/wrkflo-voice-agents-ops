@@ -1,6 +1,6 @@
 # Live State Evidence
 
-Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC and 21:44 UTC
+Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC, 21:44 UTC, and 21:56 UTC
 
 This file captures checks and focused follow-up changes used to align repo docs with live GitHub, Azure, and ElevenLabs state. No secret values are included.
 
@@ -145,6 +145,15 @@ Verified VM NSG hardening:
 | `openclaw-gateway-vm` | `20.124.180.8` | TCP `22`, `8501`, `5000`, and `5001` now allow source `174.232.30.68/32` instead of `*` |
 | `dev-workspace-vm` | `20.230.203.79` | TCP `22` now allows source `174.232.30.68/32` instead of `*` |
 
+Verified VM Azure OpenAI configuration:
+
+| VM | Managed identity | `wrkflobiz` role | Non-secret profile |
+|---|---|---|---|
+| `openclaw-gateway-vm` | `08adfb21-9499-44a8-8caf-befc7cde0105` | `Cognitive Services OpenAI User` | `/etc/profile.d/wrkflo-azure-openai.sh` |
+| `dev-workspace-vm` | `ea99b1fe-fe73-4156-b9f0-9de18eb7a5d4` | `Cognitive Services OpenAI User` | `/etc/profile.d/wrkflo-azure-openai.sh` |
+
+The VM profile file contains non-secret WrkFlo Azure OpenAI endpoint, deployment, router, and API version defaults. API keys were not written to the VMs.
+
 Verified WrkFlo placement:
 
 - `wrkflo-orchestrator` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:c377b3a`.
@@ -235,6 +244,9 @@ az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gate
 az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR --source-address-prefixes 174.232.30.68/32
 az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR2 --source-address-prefixes 174.232.30.68/32
 az network nsg rule update --resource-group dev-ws-westus2 --nsg-name dev-workspace-vmNSG --name default-allow-ssh --source-address-prefixes 174.232.30.68/32
+az vm identity assign --resource-group DEV-WS-WESTUS2 --name dev-workspace-vm
+az role assignment create --assignee-object-id <vm-principal-id> --assignee-principal-type ServicePrincipal --role "Cognitive Services OpenAI User" --scope <wrkflobiz-resource-id>
+az vm run-command invoke --resource-group <rg> --name <vm> --command-id RunShellScript --scripts <write-wrkflo-azure-openai-profile>
 az containerapp show --resource-group wrkflo --name wrkflo-orchestrator
 az containerapp show --resource-group wrkflo --name wrkflo-orchestrator-staging
 az webapp show --resource-group wrkflo --name wrkflo-app

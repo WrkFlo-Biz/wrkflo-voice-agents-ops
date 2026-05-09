@@ -24,6 +24,7 @@ Updated: 2026-05-09
 - Async start enabled
 - `/wrkflo-tools/*` and `/mcp` are deployed on the same Container App.
 - Azure OpenAI orchestration is configured with the `wrkflobiz` AI Services account, default deployment `gpt-5.4-mini`, and model-router profile env vars.
+- `openclaw-gateway-vm` and `dev-workspace-vm` have managed identities with `Cognitive Services OpenAI User` on `Wrk/wrkflobiz`; non-secret WrkFlo Azure OpenAI defaults are written in `/etc/profile.d/wrkflo-azure-openai.sh`.
 - `WRKFLO_SEARCH_ENDPOINT` is still not configured, so true web search still depends on the gateway's limited DuckDuckGo Instant Answer fallback or a future dedicated search provider.
 - Azure OpenAI endpoint is outside `wrkflo-ai-rg`: AI Services account `wrkflobiz` in resource group `Wrk`.
 - No plaintext secret values were returned by the live env check; credential-bearing settings are secret refs.
