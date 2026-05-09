@@ -54,7 +54,7 @@ Updated: 2026-05-09
 
 ## Remaining infra follow-ups
 - Add production environment reviewers before routine production deploys, after a distinct reviewer account or team exists.
-- Request additional Poland Central `gpt-image-2` quota before production creative workloads; current `OpenAI.GlobalStandard.gpt-image-2` quota is fully allocated at 12 of 12 RPM.
+- Track Azure Support ticket `WrkFloGptImage2Quota20260509T230433Z`, opened on 2026-05-09, requesting Poland Central `gpt-image-2` quota increase from 12 to 120 RPM before production creative workloads.
 - Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until live Eden/Eden v2 tool smoke tests pass after the GitHub-owned deployment.
 - Keep Eden on Azure Container Apps unless a concrete OS-level VM requirement appears.
 - See `cloud-exposure-review-2026-05-09-worker4.md` for remaining non-Eden ACR, HTTPS-only, and Postgres controlled-window work.
