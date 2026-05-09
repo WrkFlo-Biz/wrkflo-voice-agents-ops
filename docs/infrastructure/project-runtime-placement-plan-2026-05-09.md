@@ -85,8 +85,8 @@ These are important but should not be applied blind:
 - Replace temporary trusted-IP VM ingress with Tailscale, Bastion, VPN, or another stable access path.
 - Remove broad Postgres firewall rules.
 - Disable ACR admin users.
-- Enable HTTPS-only on AINIME/Isaac App Services.
+- Done 2026-05-09: enabled HTTPS-only on AINIME/Isaac App Services.
 - Rotate or move credential-like runtime env vars.
 - Add GitHub branch protection if it might block current automation.
 
-See `vm-access-hardening-state-2026-05-09.md` and `cloud-exposure-review-2026-05-09-worker4.md` for the latest controlled-window breakdown.
+See `vm-access-hardening-state-2026-05-09.md`, `cloud-exposure-review-2026-05-09-worker4.md`, and `docs/testing/evidence/https-only-hardening-2026-05-09.md` for the latest controlled-window breakdown.

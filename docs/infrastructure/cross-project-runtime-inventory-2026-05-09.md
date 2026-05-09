@@ -90,7 +90,7 @@ Move the remaining workloads to managed identity pulls/pushes before disabling t
 
 `wrkflo-app` and `wrkflo-app-dev` have HTTPS-only enabled.
 
-`ainime-web`, `ainime-api`, and `openclaw-rg/Isaac` have HTTPS-only disabled. Enable HTTPS-only in a controlled window after checking custom domains and health.
+`ainime-web`, `ainime-api`, and `openclaw-rg/Isaac` had HTTPS-only enabled on 2026-05-09 after one-at-a-time probes. See `docs/testing/evidence/https-only-hardening-2026-05-09.md`.
 
 ### GitHub
 

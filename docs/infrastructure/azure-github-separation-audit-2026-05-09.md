@@ -31,9 +31,9 @@ The broader cloud estate should be separated by project, connected only through 
 | `wrkflo-orchestrator-staging` Container App | `wrkflo` | External HTTPS, min 0, max 1 |
 | `wrkflo-app` App Service | `wrkflo` | `app.wrkflo.biz`, HTTPS-only enabled |
 | `wrkflo-app-dev` App Service | `wrkflo-dev` | Azure default hostname, HTTPS-only enabled |
-| `ainime-web` App Service | `ainime_ua` | `ainime.io`, `www.ainime.io`, HTTPS-only disabled |
-| `ainime-api` App Service | `ainime_ua` | Azure default hostname, HTTPS-only disabled |
-| `Isaac` App Service | `openclaw-rg` | Azure default hostname, HTTPS-only disabled |
+| `ainime-web` App Service | `ainime_ua` | `ainime.io`, `www.ainime.io`, HTTPS-only enabled 2026-05-09 |
+| `ainime-api` App Service | `ainime_ua` | Azure default hostname, HTTPS-only enabled 2026-05-09 |
+| `Isaac` App Service | `openclaw-rg` | Azure default hostname, HTTPS-only enabled 2026-05-09 |
 | `openclaw-gateway-vm` | `OPENCLAW-RG` / `openclaw-rg` | Public IP; NSG allows SSH, dashboard, and IBKR ports only from `174.232.30.68/32` |
 | `dev-workspace-vm` | `dev-ws-westus2` / `DEV-WS-WESTUS2` | Public IP; NSG allows SSH only from `174.232.30.68/32` |
 | `quantum-research-job` | `OPENCLAW-RG` | Manual Container Apps job |
@@ -67,7 +67,10 @@ The broader cloud estate should be separated by project, connected only through 
    - Mitigated 2026-05-09: `cafe61646254acr` admin user is disabled and Eden now pulls with system-assigned managed identity plus `AcrPull`.
    - Remaining enabled ACR admin users: `ainimeuaacr`, `wrkfloopenclawacr`, `wrkfloacr637a2eee`, and `wrkfloacr`.
 
-7. Key Vault and storage network posture needs tightening.
+7. App Service HTTP exposure was reduced.
+   - Mitigated 2026-05-09: `ainime-web`, `ainime-api`, and `openclaw-rg/Isaac` now have HTTPS-only enabled and redirect HTTP to HTTPS.
+
+8. Key Vault and storage network posture needs tightening.
    - Key Vault public network access is enabled.
    - Some storage accounts allow broad public network access; `isaactutstorage` is misplaced in `NetworkWatcherRG` and allows blob public access.
 
@@ -166,7 +169,6 @@ Applied 2026-05-09 to focused groups:
 - Move plain credential env settings to secret refs or Key Vault refs.
 - Add production environment reviewers where production deploys should require human approval.
 - Switch remaining ACR pulls to managed identity and disable remaining ACR admin users.
-- Enable HTTPS-only on `Isaac`, `ainime-web`, and `ainime-api`.
 - Restrict Key Vault and storage public network access where feasible.
 
 ### Phase 4: Consolidation

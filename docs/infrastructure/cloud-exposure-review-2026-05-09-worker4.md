@@ -2,13 +2,13 @@
 
 Scope: remaining non-Eden ACR admin users, AINIME/Isaac HTTPS-only state, and Postgres firewall exposure called out in the infrastructure docs.
 
-No live Azure state was changed during this review. Commands used were read-only `az ... show/list`, Azure Resource Graph search, repository text search, and HTTP/HTTPS header checks. Existing dirty files in the repo were left untouched.
+No live Azure state was changed during the initial review. Follow-up on 2026-05-09 enabled HTTPS-only for the three scoped App Services after one-at-a-time probes and rollback checks. Commands used for the initial review were read-only `az ... show/list`, Azure Resource Graph search, repository text search, and HTTP/HTTPS header checks. Existing dirty files in the repo were left untouched.
 
 ## Summary
 
-No remaining live fix met the "clearly non-disruptive" threshold except documentation/metadata follow-up. The remaining exposure reductions should be treated as controlled-window work because active runtimes still depend on registry username/password auth, HTTP endpoints currently serve traffic, or database client egress is not fully pinned.
+HTTPS-only is now complete for the scoped AINIME/Isaac App Services. The remaining exposure reductions should be treated as controlled-window work because active runtimes still depend on registry username/password auth or database client egress is not fully pinned.
 
-The closest low-risk candidate is `wrkflo-rg/wrkfloacr`: no Azure Resource Graph consumer, no role assignments, and it is already documented as a duplicate ACR. Disable its admin user only after a final owner/rollback check confirms no hidden CI, workstation, or rollback path still uses the admin credentials.
+The closest low-risk ACR candidate is `wrkflo-rg/wrkfloacr`: no Azure Resource Graph consumer, no role assignments, and no scoped tokens. Do not disable it blindly; a follow-up local search found stale `wrkfloacr.azurecr.io` and `wrkfloacr` references in `/Users/mosestut/projects/wrkflo-orchestrator`, including an old Kubernetes deployment example and setup script, so owner confirmation is still required.
 
 ## ACR Admin Users
 
@@ -27,11 +27,11 @@ Live App Service state:
 
 | App Service | Hostnames | HTTPS-only | HTTP/HTTPS probe result | Classification |
 |---|---|---:|---|---|
-| `ainime_ua/ainime-web` | `ainime.io`, `www.ainime.io`, Azure default hostname | Disabled | HTTP and HTTPS both return `200`. | Controlled window. HTTPS works, but HTTP currently serves the site directly; enabling HTTPS-only changes public behavior for any HTTP clients. |
-| `ainime_ua/ainime-api` | Azure default hostname | Disabled | HTTP and HTTPS both return `405` to `HEAD`, with `Allow: GET`. | Controlled window. Validate API clients and health path, then enable HTTPS-only. |
-| `openclaw-rg/Isaac` | Azure default hostname | Disabled | HTTP and HTTPS both return `200`. | Controlled window. Low risk, but still changes reachable HTTP behavior. |
+| `ainime_ua/ainime-web` | `ainime.io`, `www.ainime.io`, Azure default hostname | Enabled 2026-05-09 | HTTP now redirects to HTTPS; HTTPS returns `200`. | Complete for HTTPS-only. |
+| `ainime_ua/ainime-api` | Azure default hostname | Enabled 2026-05-09 | HTTP now redirects to HTTPS; HTTPS returns `405` to `HEAD`, with `Allow: GET`. | Complete for HTTPS-only. |
+| `openclaw-rg/Isaac` | Azure default hostname | Enabled 2026-05-09 | HTTP now redirects to HTTPS; HTTPS returns `200`. | Complete for HTTPS-only. |
 
-Suggested window steps: capture current health responses, enable HTTPS-only one app at a time, verify HTTPS health and expected HTTP redirect behavior, then keep rollback command ready to set `--https-only false` if a client breaks.
+Evidence: `docs/testing/evidence/https-only-hardening-2026-05-09.md`.
 
 ## Postgres Firewall Exposure
 
@@ -48,13 +48,12 @@ AINIME web/API currently share the same App Service possible outbound IP set. Th
 Safe or metadata-only:
 
 - Keep this review as evidence and add any missing `project`, `environment`, `owner`, `repo`, `managed_by`, and `lifecycle` tags for AINIME/Isaac resources if owners agree.
-- Treat `wrkflo-rg/wrkfloacr` as the only low-risk admin-disable candidate, but do one explicit owner/rollback check first.
+- Treat `wrkflo-rg/wrkfloacr` as the lowest-risk admin-disable candidate, but do one explicit owner/rollback check first because stale local references still exist.
 
 Controlled-window required:
 
 - Disable admin on `wrkfloacr637a2eee`, `ainimeuaacr`, or `wrkfloopenclawacr`.
 - Switch App Service or Container App job registry auth from password secrets to managed identity.
-- Enable HTTPS-only on `ainime-web`, `ainime-api`, or `Isaac`.
 - Remove `ainime-server2` `allow-all` firewall rule or replace `wrkflo-db` allow-Azure-services access.
 
 ## Evidence Commands
