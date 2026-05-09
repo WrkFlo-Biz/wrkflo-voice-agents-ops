@@ -7,12 +7,12 @@ Updated: 2026-05-09
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
 - Runtime dependencies in `wrkflo-ai-rg`: `wrkflo-ai-env`, `cafe61646254acr`, `wrkflostate7091c86a`, `workspace-wrkfloairgAAkP`
-- Latest revision: `wrkflo-google-webhooks--0000074`
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019`
+- Latest revision: `wrkflo-google-webhooks--0000075`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`
 - Traffic: `100%` to latest revision
 - Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`
 - `HANDOFF_AGENT_ID`: `agent_9601kjenmpbwewntb483he79nfvr`
-- Health endpoint observed healthy on 2026-05-09 at 20:52 UTC.
+- Health endpoint observed healthy after the GitHub deploy on 2026-05-09 at 21:44 UTC.
 - Canonical GitHub repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`
 - Gateway source path: `services/eden-gateway`
 - Resource group tags applied on 2026-05-09: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
@@ -38,13 +38,13 @@ Updated: 2026-05-09
 - Azure roles:
   - `Container Apps Contributor` on `wrkflo-ai-rg`
   - `AcrPush` on `cafe61646254acr`
-- PR CI is visible and green for branch `codex/reconcile-voice-agent-docs`.
-- First GitHub Actions deployment from this repo is still unproven until `.github/workflows/eden-gateway-deploy.yml` is merged and run.
+- PR #1 merged to `main` at merge commit `5e670b2`.
+- Main-branch Eden Gateway CI run `25612536913` succeeded.
+- Main-branch Deploy Eden Gateway run `25612536914` succeeded and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
 
 ## Remaining infra follow-ups
-- Merge/push the repo-owned gateway source and run `.github/workflows/eden-gateway-deploy.yml`.
-- Add production environment reviewers or branch restrictions before routine production deploys.
-- Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until the GitHub deploy path is proven healthy.
+- Add production environment reviewers before routine production deploys.
+- Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until live Eden/Eden v2 tool smoke tests pass after the GitHub-owned deployment.
 - Convert Eden ACR pull from password secret to managed identity `AcrPull`, then disable ACR admin user.
 - Keep Eden on Azure Container Apps unless a concrete OS-level VM requirement appears.
 - See `azure-github-separation-audit-2026-05-09.md` for the full cross-project audit.

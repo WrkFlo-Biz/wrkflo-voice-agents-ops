@@ -4,7 +4,7 @@ Date: 2026-05-09
 
 Purpose: make `services/eden-gateway` deployable from GitHub Actions to the existing Azure Container App without using long-lived Azure credentials.
 
-Status on 2026-05-09: Azure OIDC identity, GitHub environments, environment secrets, and environment variables are configured. The first GitHub Actions deployment from the repo is still pending.
+Status on 2026-05-09: Azure OIDC identity, GitHub environments, environment secrets, and environment variables are configured. The first main-branch GitHub Actions deployment from the repo succeeded.
 
 ## Current Deployment Target
 
@@ -18,8 +18,8 @@ Azure Container App: wrkflo-google-webhooks
 ACR: cafe61646254acr
 Image repository: wrkflo-google-webhooks
 Health URL: https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
-Live revision: wrkflo-google-webhooks--0000074
-Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019
+Live revision: wrkflo-google-webhooks--0000075
+Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2
 ```
 
 ## Required GitHub Environments
@@ -39,11 +39,14 @@ AZURE_TENANT_ID
 AZURE_SUBSCRIPTION_ID
 ```
 
-Recommended production protection:
+Configured production protection:
 
-- Required reviewers enabled.
 - Deployment branch limited to `main`.
 - No automatic production deploy from feature branches.
+
+Recommended remaining production protection:
+
+- Required reviewers enabled.
 
 Configured environment variables:
 
@@ -144,7 +147,7 @@ npm --prefix services/eden-gateway run check
 ruby -e 'require "yaml"; ARGV.each { |f| YAML.load_file(f); puts "ok #{f}" }' .github/workflows/*.yml
 ```
 
-4. Trigger `.github/workflows/eden-gateway-deploy.yml` manually with `environment=staging` first.
+4. Trigger `.github/workflows/eden-gateway-deploy.yml` manually with `environment=staging` first, or merge a validated PR to `main` when intentionally deploying production.
 
 5. If staging targets the same Container App, treat staging as a workflow validation pass, not an isolated runtime test.
 
@@ -183,7 +186,8 @@ curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontai
 
 After GitHub deployment works:
 
-1. Assign managed identity to the Container App.
-2. Grant that identity `AcrPull` on `cafe61646254acr`.
-3. Move the Container App registry pull from admin credentials to managed identity.
-4. Disable ACR admin user only after image pulls are verified.
+1. Add required production environment reviewers.
+2. Assign managed identity to the Container App.
+3. Grant that identity `AcrPull` on `cafe61646254acr`.
+4. Move the Container App registry pull from admin credentials to managed identity.
+5. Disable ACR admin user only after image pulls are verified.

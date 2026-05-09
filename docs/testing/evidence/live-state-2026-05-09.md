@@ -1,6 +1,6 @@
 # Live State Evidence
 
-Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC
+Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC and 21:44 UTC
 
 This file captures checks and focused follow-up changes used to align repo docs with live GitHub, Azure, and ElevenLabs state. No secret values are included.
 
@@ -8,7 +8,7 @@ This file captures checks and focused follow-up changes used to align repo docs 
 
 - Remote: `https://github.com/WrkFlo-Biz/wrkflo-voice-agents-ops.git`
 - Default branch: `main`
-- Working branch: `codex/reconcile-voice-agent-docs`
+- PR branch: `codex/reconcile-voice-agent-docs`; merged to `main` at `5e670b2`
 - GitHub environments present: `production`, `staging`
 - Environment secrets present in both environments:
   - `AZURE_CLIENT_ID`
@@ -21,7 +21,7 @@ This file captures checks and focused follow-up changes used to align repo docs 
   - `AZURE_RESOURCE_GROUP=wrkflo-ai-rg`
   - `HEALTH_URL=https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health`
   - `IMAGE_REPOSITORY=wrkflo-google-webhooks`
-- Eden gateway workflow files are included in this branch:
+- Eden gateway workflow files are now on `main`:
   - `.github/workflows/eden-gateway-ci.yml`
   - `.github/workflows/eden-gateway-deploy.yml`
 
@@ -32,10 +32,10 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000074`
+- Latest revision: `wrkflo-google-webhooks--0000075`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509194019`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`
 - Registry server: `cafe61646254acr.azurecr.io`
 
 ## `wrkflo-ai-rg` Runtime Dependencies
@@ -62,6 +62,12 @@ Health response:
 
 ```json
 {"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T20:52:22.127Z","sessionStore":"azure-table","sessionStoreOk":true,"handoffEnabled":true}
+```
+
+Post-deploy health response:
+
+```json
+{"ok":true,"service":"workspace-google-webhooks","date":"2026-05-09T21:44:13.640Z","sessionStore":"azure-table","sessionStoreOk":true,"handoffEnabled":true}
 ```
 
 ## Azure Runtime Env Summary
@@ -124,6 +130,15 @@ Verified WrkFlo placement:
 - `wrkflo-orchestrator-staging` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:62de71c8`.
 - `wrkflo-app` remains a running Linux container App Service with hostnames `app.wrkflo.biz` and `wrkflo-app.azurewebsites.net`; HTTPS-only is enabled.
 
+Verified Eden GitHub deploy:
+
+- PR #1 merged to `main` at merge commit `5e670b2`.
+- Eden Gateway CI run `25612536913` succeeded on `main`.
+- Deploy Eden Gateway run `25612536914` succeeded on `main`.
+- The deployment built and pushed image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
+- Azure revision `wrkflo-google-webhooks--0000075` is running and receiving `100%` traffic.
+- Production environment deployment branch policy now allows only the `main` branch.
+
 ## Azure GitHub OIDC
 
 - App registration: `wrkflo-eden-gateway-github-actions`
@@ -163,6 +178,10 @@ az monitor log-analytics workspace show --resource-group wrkflo-ai-rg --workspac
 az cognitiveservices account list --query "[?contains(endpoint || '', 'wrkflobiz') || name=='wrkflobiz']"
 az ad app federated-credential list --id 05605d80-1198-40f5-8767-aa6be2eaddb8
 curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
+gh pr merge 1 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --merge
+gh run watch 25612536914 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --exit-status
+gh api -X PUT repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production
+gh api -X POST repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production/deployment-branch-policies
 az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
 az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
 az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
