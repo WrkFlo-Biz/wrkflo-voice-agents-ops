@@ -80,7 +80,7 @@ The checked ACRs have public network access enabled. Admin user status after 202
 
 - `wrkflo-ai-rg/cafe61646254acr`: admin user disabled; Eden pulls with system-assigned managed identity and `AcrPull`.
 - `wrkflo/wrkfloacr637a2eee`: admin user still enabled.
-- `wrkflo-rg/wrkfloacr`: admin user still enabled.
+- `wrkflo-rg/wrkfloacr`: admin user still enabled; no live Azure consumer found beyond the registry itself, but it contains old `wrkflo-orchestrator` images from 2026-04-30.
 - `openclaw-rg/wrkfloopenclawacr`: admin user still enabled.
 - `ainime_ua/ainimeuaacr`: admin user still enabled.
 

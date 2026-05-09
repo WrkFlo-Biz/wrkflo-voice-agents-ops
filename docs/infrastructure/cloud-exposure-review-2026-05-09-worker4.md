@@ -8,7 +8,7 @@ No live Azure state was changed during the initial review. Follow-up on 2026-05-
 
 HTTPS-only is now complete for the scoped AINIME/Isaac App Services. The remaining exposure reductions should be treated as controlled-window work because active runtimes still depend on registry username/password auth or database client egress is not fully pinned.
 
-The closest low-risk ACR candidate is `wrkflo-rg/wrkfloacr`: no Azure Resource Graph consumer, no role assignments, and no scoped tokens. Do not disable it blindly; a follow-up local search found stale `wrkfloacr.azurecr.io` and `wrkfloacr` references in `/Users/mosestut/projects/wrkflo-orchestrator`, including an old Kubernetes deployment example and setup script, so owner confirmation is still required.
+The closest low-risk ACR candidate is `wrkflo-rg/wrkfloacr`: no Azure Resource Graph consumer beyond the registry itself, no role assignments, and no scoped tokens. Do not disable it blindly; a follow-up check found it still contains `wrkflo-orchestrator` images last pushed on 2026-04-30, and local `wrkfloacr.azurecr.io` / `wrkfloacr` references remain in `/Users/mosestut/projects/wrkflo-orchestrator`, including an old Kubernetes deployment example, setup script, Redis operations docs, and tests.
 
 ## ACR Admin Users
 
@@ -19,7 +19,7 @@ All checked non-Eden ACRs still have public network access enabled and admin use
 | `wrkflo/wrkfloacr637a2eee` | `wrkflo-orchestrator` and `wrkflo-orchestrator-staging` Container Apps pull with system identity; `wrkflo-app` and `wrkflo-app-dev` App Services pull `langflow` images with `DOCKER_REGISTRY_SERVER_*` settings and `acrUseManagedIdentityCreds=false`. | Container Apps have `AcrPull`; `wrkflo-app-dev` identity has `AcrPull`; `wrkflo-app` identity was not present in the ACR role list. | Controlled window. Grant missing `AcrPull`, switch App Services to managed identity registry auth, validate restarts/pulls, then disable admin. |
 | `ainime_ua/ainimeuaacr` | `ainime-web` and `ainime-api` App Services pull AINIME images with `DOCKER_REGISTRY_SERVER_*` settings and `acrUseManagedIdentityCreds=false`. | `ainime-web` identity has `AcrPull`; `ainime-api` identity was not present in the ACR role list. No scoped tokens found. | Controlled window. Add/verify `AcrPull`, switch both App Services to managed identity registry auth, validate, then disable admin. |
 | `openclaw-rg/wrkfloopenclawacr` | `openclaw-gateway-vm` references `wrkfloopenclawacr.azurecr.io/openclaw`; `OPENCLAW-RG/quantum-research-job` pulls `global-sentinel/quantum-research:latest` using a registry username and password secret ref. | VM system identity has `AcrPull`; the Container App job has `identity=None` and uses password secret ref `wrkfloopenclawacrazurecrio-wrkfloopenclawacr`. No scoped tokens found. | Controlled window. Move the Container App job to managed identity or scoped token auth, validate manual job start, then disable admin. |
-| `wrkflo-rg/wrkfloacr` | No active Azure Resource Graph consumer found beyond the registry itself; repository docs already mark it as duplicate/not used by active workflow. | No role assignments and no scoped tokens found. | Low-risk candidate after owner/rollback confirmation. Not changed in this pass because hidden CI/local consumers cannot be ruled out from Azure state alone. |
+| `wrkflo-rg/wrkfloacr` | No active Azure Resource Graph consumer found beyond the registry itself; registry contains `wrkflo-orchestrator:latest` and `wrkflo-orchestrator:6b140ec`, both last updated 2026-04-30; local orchestrator references still exist. | No role assignments and no scoped tokens found. | Lower-risk than active registries, but not a blind disable candidate. Confirm image retention, stale local references, and rollback ownership first. |
 
 ## AINIME / Isaac HTTPS-Only
 
@@ -48,7 +48,7 @@ AINIME web/API currently share the same App Service possible outbound IP set. Th
 Safe or metadata-only:
 
 - Keep this review as evidence and add any missing `project`, `environment`, `owner`, `repo`, `managed_by`, and `lifecycle` tags for AINIME/Isaac resources if owners agree.
-- Treat `wrkflo-rg/wrkfloacr` as the lowest-risk admin-disable candidate, but do one explicit owner/rollback check first because stale local references still exist.
+- Treat `wrkflo-rg/wrkfloacr` as the lowest-risk admin-disable candidate, but complete explicit owner/rollback and image-retention checks first because the registry is not empty and stale local references still exist.
 
 Controlled-window required:
 

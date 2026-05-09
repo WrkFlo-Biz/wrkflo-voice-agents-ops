@@ -109,7 +109,7 @@ Tag first, wait 7-14 days, then delete only with owner approval.
 | `comfyui`, `rg-comfy` | Empty RGs |
 | `wrkflo/debug-langflow` | Failed Container Instance |
 | `wrkflo-rg/wrkflo-env` | No active apps/jobs found |
-| `wrkflo-rg/wrkfloacr` | Duplicate ACR not used by active workflow |
+| `wrkflo-rg/wrkfloacr` | Duplicate/legacy ACR not used by active Azure workflow; contains old `wrkflo-orchestrator` images from 2026-04-30 |
 | `NetworkWatcherRG/isaactutstorage` | Misplaced storage with public blob access |
 | Excess OpenClaw snapshots | Verify retention; workflow appears intended to prune |
 
