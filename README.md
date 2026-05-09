@@ -16,7 +16,7 @@ Operational documentation and audit artifacts for Wrk.Flo voice agents:
 ## Current status
 - Active hardening and drift-monitoring in progress.
 - Canonical enterprise repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`.
-- Live Eden gateway revision: `wrkflo-google-webhooks--0000079`.
+- Live Eden gateway revision: `wrkflo-google-webhooks--0000080`.
 - GitHub OIDC deploy setup is configured and the first main-branch workflow deployment succeeded on 2026-05-09.
 - Latest comprehensive report: `docs/audit/comprehensive-overhaul-validation-pack.md`
 - Latest Azure/GitHub separation audit: `docs/infrastructure/azure-github-separation-audit-2026-05-09.md`

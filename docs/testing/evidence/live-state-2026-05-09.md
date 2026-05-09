@@ -32,7 +32,7 @@ This file captures checks and focused follow-up changes used to align repo docs 
 - Managed environment: `wrkflo-ai-env`
 - Location: East US
 - FQDN: `wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io`
-- Latest revision: `wrkflo-google-webhooks--0000079`
+- Latest revision: `wrkflo-google-webhooks--0000080`
 - Running status: `Running`
 - Traffic: `100%` to latest revision
 - Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`
@@ -130,9 +130,18 @@ Secret refs observed:
 - `azure-storage-connection-string`
 - `elevenlabs-api-key`
 - `azure-openai-api-key`
-- Legacy ACR registry password secret still present but no longer used by registry auth: `cafe61646254acrazurecrio-cafe61646254acr`
+- `azure-openai-image-api-key`
 
 `WRKFLO_SEARCH_ENDPOINT` is not configured.
+
+ACR password secret cleanup on 2026-05-09 at 22:14 UTC:
+
+- Removed old Container App ACR password secret `cafe61646254acrazurecrio-cafe61646254acr`.
+- Post-cleanup secret list contains only runtime app secrets: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, and `azure-openai-api-key`.
+- Registry auth still uses `identity=system` with empty `passwordSecretRef`.
+- Container App provisioning returned to `Succeeded`; `wrkflo-google-webhooks--0000080` is latest/ready and receives `100%` traffic.
+- ACR `cafe61646254acr` admin user remains disabled.
+- `/health` returned healthy after cleanup.
 
 ## Focused Infrastructure Follow-up
 
@@ -150,6 +159,14 @@ Verified VM NSG hardening:
 |---|---|---|
 | `openclaw-gateway-vm` | `20.124.180.8` | TCP `22`, `8501`, `5000`, and `5001` now allow source `174.232.30.68/32` instead of `*` |
 | `dev-workspace-vm` | `20.230.203.79` | TCP `22` now allows source `174.232.30.68/32` instead of `*` |
+
+Verified VM access posture:
+
+- `dev-workspace-vm` and `openclaw-gateway-vm` are both online in Tailscale.
+- `dev-workspace-vm` has Tailscale Serve routes for `/`, `/api`, and `/orch`.
+- `openclaw-gateway-vm` has Tailscale Serve routes for the OpenClaw gateway on `443` and `18789`.
+- No public NSG rules were removed because the current `174.232.30.68/32` rules remain the verified break-glass path until Tailscale SSH plus Azure Run Command or Serial Console are verified.
+- Detailed evidence: `docs/infrastructure/vm-access-hardening-state-2026-05-09.md`.
 
 Verified WrkFlo placement:
 
@@ -169,18 +186,34 @@ Verified Eden GitHub deploy:
 - PR #2 merged to `main` at merge commit `17ebb7d`.
 - Deploy Eden Gateway run `25612879618` succeeded on `main`.
 - The GitHub-built router deployment produced image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`.
-- Azure revision `wrkflo-google-webhooks--0000079` is running and receiving `100%` traffic.
+- Azure revision `wrkflo-google-webhooks--0000080` is running and receiving `100%` traffic after the ACR password secret cleanup revision.
 - Production environment deployment branch policy now allows only the `main` branch.
 - `cafe61646254acr` admin user is disabled.
 
 Verified GitHub branch protection:
 
 - `main` is protected for `WrkFlo-Biz/wrkflo-voice-agents-ops`.
+- For `WrkFlo-Biz/wrkflo-voice-agents-ops`, `main` requires 1 approving PR review, dismisses stale reviews, requires conversation resolution, does not require code owner review, does not require last-push approval, does not enforce protection for admins, and has no required status checks configured.
 - `main` is protected for `WrkFlo-Biz/wrkflo-orchestrator`.
 - `main` is protected for `WrkFlo-Biz/global-sentinel`.
 - `main` is protected for `WrkFlo-Biz/global-sentinel-azure-quantum`.
 - `main` is protected for `WrkFlo-Biz/dev-workspace`.
 - `main` is protected for `WrkFlo-Biz/openclaw-prod`.
+
+Verified GitHub environment protection for `WrkFlo-Biz/wrkflo-voice-agents-ops`:
+
+- `production` exists and has `can_admins_bypass=true`.
+- `production` has one protection rule: deployment branch policy.
+- `production` deployment branch policy uses custom branch policies and allows only branch `main`.
+- `production` has no required reviewer protection rule configured.
+- `staging` exists and has `can_admins_bypass=true`.
+- `staging` has no protection rules and no deployment branch policy configured.
+- Branches present: `main`, `codex/eden-model-router`, `codex/reconcile-voice-agent-docs`.
+- Repository collaborators with access: `Wrk-Flo` only, with `admin` role.
+- Organization admins returned by API: `Wrk-Flo` only.
+- Repository teams with access: none.
+- Organization teams returned by API: none.
+- Required reviewers were not configured because there is no separate reviewer team or second human/admin collaborator. Setting `Wrk-Flo` as the only reviewer would be low-value and could couple deployment approval to the same admin account that operates the repo.
 
 ## Azure GitHub OIDC
 
@@ -210,12 +243,23 @@ Read-only agent API scan:
 git fetch --prune origin
 git ls-remote --heads origin main codex/reconcile-voice-agent-docs
 gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments
+gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production
+gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/staging
+gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/environments/production/deployment-branch-policies
+gh api --method GET repos/WrkFlo-Biz/wrkflo-voice-agents-ops/branches -f per_page=100
+gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/branches/main/protection
+gh api --method GET repos/WrkFlo-Biz/wrkflo-voice-agents-ops/collaborators -f affiliation=all -f per_page=100
+gh api --method GET repos/WrkFlo-Biz/wrkflo-voice-agents-ops/teams -f per_page=100
+gh api --method GET orgs/WrkFlo-Biz/teams -f per_page=100
+gh api --method GET orgs/WrkFlo-Biz/members -f role=admin -f per_page=100
 gh api repos/WrkFlo-Biz/wrkflo-voice-agents-ops/actions/workflows
 az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
 az containerapp revision list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
+az containerapp revision list --all --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
 az containerapp secret list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
 az resource list --resource-group wrkflo-ai-rg
 az acr show --resource-group wrkflo-ai-rg --name cafe61646254acr
+az role assignment list --assignee f35c512d-9201-4741-a02f-9e024743f98e --scope <cafe61646254acr-resource-id>
 az storage account show --resource-group wrkflo-ai-rg --name wrkflostate7091c86a
 az monitor log-analytics workspace show --resource-group wrkflo-ai-rg --workspace-name workspace-wrkfloairgAAkP
 az cognitiveservices account list --query "[?contains(endpoint || '', 'wrkflobiz') || name=='wrkflobiz']"
@@ -233,6 +277,9 @@ az containerapp registry set --resource-group wrkflo-ai-rg --name wrkflo-google-
 gh workflow run "Deploy Eden Gateway" --repo WrkFlo-Biz/wrkflo-voice-agents-ops --ref main -f environment=production
 gh run watch 25612717893 --repo WrkFlo-Biz/wrkflo-voice-agents-ops --exit-status
 az acr update --resource-group wrkflo-ai-rg --name cafe61646254acr --admin-enabled false
+az containerapp secret remove --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --secret-names cafe61646254acrazurecrio-cafe61646254acr -o none
+az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --query "{provisioningState:properties.provisioningState,runningStatus:properties.runningStatus,latestRevision:properties.latestRevisionName,latestReadyRevisionName:properties.latestReadyRevisionName,registries:properties.configuration.registries,image:properties.template.containers[0].image,traffic:properties.configuration.ingress.traffic}" -o json
+curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
 az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
 az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
 az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active

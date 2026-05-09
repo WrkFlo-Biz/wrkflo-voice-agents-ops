@@ -7,16 +7,17 @@ Updated: 2026-05-09
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
 - Runtime dependencies in `wrkflo-ai-rg`: `wrkflo-ai-env`, `cafe61646254acr`, `wrkflostate7091c86a`, `workspace-wrkfloairgAAkP`
-- Latest revision: `wrkflo-google-webhooks--0000079`
+- Latest revision: `wrkflo-google-webhooks--0000080`
 - Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`
 - Traffic: `100%` to latest revision
-- Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`
+- Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`, `azure-openai-image-api-key`
 - `HANDOFF_AGENT_ID`: `agent_9601kjenmpbwewntb483he79nfvr`
-- Health endpoint observed healthy after the GitHub-built router deployment on 2026-05-09 at 22:02 UTC.
+- Health endpoint observed healthy after the ACR password secret cleanup revision on 2026-05-09 at 22:19 UTC.
 - Canonical GitHub repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`
 - Gateway source path: `services/eden-gateway`
 - Resource group tags applied on 2026-05-09: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
 - Container App registry authentication now uses system-assigned managed identity with `AcrPull`; ACR admin user is disabled for `cafe61646254acr`.
+- Old unused Container App ACR password secret `cafe61646254acrazurecrio-cafe61646254acr` was removed on 2026-05-09 after confirming registry auth no longer references it.
 
 ## Notable runtime settings
 - `LIVE_DEMO_START_TIMEOUT_MS=15000`
@@ -47,8 +48,9 @@ Updated: 2026-05-09
 - PR #2 merged to `main` at merge commit `17ebb7d`; Deploy Eden Gateway run `25612879618` succeeded and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d`.
 
 ## Remaining infra follow-ups
-- Add production environment reviewers before routine production deploys.
+- Add production environment reviewers before routine production deploys, after a distinct reviewer account or team exists.
 - Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until live Eden/Eden v2 tool smoke tests pass after the GitHub-owned deployment.
-- Remove the old unused Container App ACR password secret after a longer soak window confirms no rollback path depends on it.
 - Keep Eden on Azure Container Apps unless a concrete OS-level VM requirement appears.
+- See `cloud-exposure-review-2026-05-09-worker4.md` for remaining non-Eden ACR, HTTPS-only, and Postgres controlled-window work.
+- See `vm-access-hardening-state-2026-05-09.md` for the deferred VM public NSG removal checklist.
 - See `azure-github-separation-audit-2026-05-09.md` for the full cross-project audit.
