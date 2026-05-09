@@ -88,3 +88,5 @@ These are important but should not be applied blind:
 - Enable HTTPS-only on AINIME/Isaac App Services.
 - Rotate or move credential-like runtime env vars.
 - Add GitHub branch protection if it might block current automation.
+
+See `vm-access-hardening-state-2026-05-09.md` and `cloud-exposure-review-2026-05-09-worker4.md` for the latest controlled-window breakdown.

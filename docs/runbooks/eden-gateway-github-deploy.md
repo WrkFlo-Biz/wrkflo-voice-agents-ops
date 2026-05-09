@@ -18,8 +18,8 @@ Azure Container App: wrkflo-google-webhooks
 ACR: cafe61646254acr
 Image repository: wrkflo-google-webhooks
 Health URL: https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
-Live revision: wrkflo-google-webhooks--0000078
-Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router
+Live revision: wrkflo-google-webhooks--0000080
+Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d
 ```
 
 ## Required GitHub Environments
@@ -46,7 +46,7 @@ Configured production protection:
 
 Recommended remaining production protection:
 
-- Required reviewers enabled.
+- Required reviewers enabled after a distinct reviewer target exists. A 2026-05-09 protection check found only one repo collaborator/org admin (`Wrk-Flo`) and no repo or org teams, so no required reviewer was configured.
 
 Configured environment variables:
 
@@ -189,4 +189,24 @@ After GitHub deployment works:
 1. Add required production environment reviewers.
 2. Keep the Container App system-assigned identity and `AcrPull` assignment in place.
 3. Keep ACR admin disabled for `cafe61646254acr`.
-4. Remove the old unused Container App ACR password secret after a longer soak window confirms no rollback path depends on it.
+4. Done 2026-05-09: removed old unused Container App ACR password secret `cafe61646254acrazurecrio-cafe61646254acr` after confirming registry auth uses `identity=system`, `passwordSecretRef` is empty, ACR admin is disabled, and registry access for stopped rollback revisions goes through the app's managed identity.
+
+If registry auth ever needs to be repaired, prefer restoring the managed-identity path:
+
+```bash
+az containerapp identity assign \
+  --resource-group wrkflo-ai-rg \
+  --name wrkflo-google-webhooks \
+  --system-assigned
+
+az role assignment create \
+  --assignee <container-app-principal-id> \
+  --role AcrPull \
+  --scope "$(az acr show --resource-group wrkflo-ai-rg --name cafe61646254acr --query id -o tsv)"
+
+az containerapp registry set \
+  --resource-group wrkflo-ai-rg \
+  --name wrkflo-google-webhooks \
+  --server cafe61646254acr.azurecr.io \
+  --identity system
+```
