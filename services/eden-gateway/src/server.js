@@ -32,7 +32,18 @@ const WRKFLO_SEARCH_API_KEY = process.env.WRKFLO_SEARCH_API_KEY || "";
 const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT || "";
 const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY || "";
 const AZURE_OPENAI_DEPLOYMENT = process.env.AZURE_OPENAI_DEPLOYMENT || "";
-const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
+const AZURE_OPENAI_DEFAULT_DEPLOYMENT =
+  process.env.AZURE_OPENAI_DEFAULT_DEPLOYMENT || AZURE_OPENAI_DEPLOYMENT || "";
+const AZURE_OPENAI_PREMIUM_DEPLOYMENT = process.env.AZURE_OPENAI_PREMIUM_DEPLOYMENT || "";
+const AZURE_OPENAI_FAST_DEPLOYMENT = process.env.AZURE_OPENAI_FAST_DEPLOYMENT || "";
+const AZURE_OPENAI_REASONING_DEPLOYMENT = process.env.AZURE_OPENAI_REASONING_DEPLOYMENT || "";
+const AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT = process.env.AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT || "";
+const AZURE_OPENAI_CODEX_DEPLOYMENT = process.env.AZURE_OPENAI_CODEX_DEPLOYMENT || "";
+const AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT = process.env.AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT || "";
+const AZURE_OPENAI_MODEL_ROUTER_ENABLED =
+  String(process.env.AZURE_OPENAI_MODEL_ROUTER_ENABLED || "true").toLowerCase() !== "false";
+const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || "2025-04-01-preview";
+const AZURE_OPENAI_MAX_OUTPUT_TOKENS = safeInt(process.env.AZURE_OPENAI_MAX_OUTPUT_TOKENS, 300, 16, 1200);
 const WRKFLO_ORCHESTRATE_TIMEOUT_MS = Number(process.env.WRKFLO_ORCHESTRATE_TIMEOUT_MS || 12000);
 
 const WRKFLO_TOOL_DEFINITIONS = [
@@ -352,12 +363,51 @@ async function wrkfloSearch({ query, context = "", maxResults = 5 }) {
   };
 }
 
-async function callAzureOpenAI({ system, user }) {
-  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY || !AZURE_OPENAI_DEPLOYMENT) return null;
+function selectAzureOpenAIProfile({ request, context }) {
+  const fallback = {
+    route: "default",
+    deployment: AZURE_OPENAI_DEFAULT_DEPLOYMENT,
+    api: "chat"
+  };
+  if (!AZURE_OPENAI_MODEL_ROUTER_ENABLED) return fallback;
+
+  const text = `${request || ""} ${context || ""}`.toLowerCase();
+  if (AZURE_OPENAI_CODEX_DEPLOYMENT && /\b(code|coding|repo|github|bug|stack trace|javascript|typescript|python|ci|pull request)\b/.test(text)) {
+    return { route: "codex", deployment: AZURE_OPENAI_CODEX_DEPLOYMENT, api: "responses" };
+  }
+  if (AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT && /\b(deep|prove|research|root cause|hardest|advanced analysis)\b/.test(text)) {
+    return { route: "deep_reasoning", deployment: AZURE_OPENAI_DEEP_REASONING_DEPLOYMENT, api: "chat" };
+  }
+  if (AZURE_OPENAI_REASONING_DEPLOYMENT && /\b(reason|diagnose|debug|math|multi-step|multi step)\b/.test(text)) {
+    return { route: "reasoning", deployment: AZURE_OPENAI_REASONING_DEPLOYMENT, api: "chat" };
+  }
+  if (AZURE_OPENAI_PREMIUM_DEPLOYMENT && /\b(strategy|architecture|complex|premium|escalate|planning|analyze)\b/.test(text)) {
+    return { route: "premium", deployment: AZURE_OPENAI_PREMIUM_DEPLOYMENT, api: "chat" };
+  }
+  if (AZURE_OPENAI_FAST_DEPLOYMENT && /\b(classify|extract|label|tag|rewrite|short|summarize)\b/.test(text)) {
+    return { route: "fast", deployment: AZURE_OPENAI_FAST_DEPLOYMENT, api: "chat" };
+  }
+
+  return fallback;
+}
+
+function extractResponsesText(json) {
+  if (typeof json?.output_text === "string") return json.output_text;
+  const chunks = [];
+  for (const item of json?.output || []) {
+    for (const content of item?.content || []) {
+      if (typeof content?.text === "string") chunks.push(content.text);
+    }
+  }
+  return chunks.join("\n");
+}
+
+async function callAzureOpenAIChat({ system, user, deployment }) {
+  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY || !deployment) return null;
 
   const endpoint = AZURE_OPENAI_ENDPOINT.replace(/\/+$/g, "");
   const url = `${endpoint}/openai/deployments/${encodeURIComponent(
-    AZURE_OPENAI_DEPLOYMENT
+    deployment
   )}/chat/completions?api-version=${encodeURIComponent(AZURE_OPENAI_API_VERSION)}`;
 
   const controller = new AbortController();
@@ -374,8 +424,7 @@ async function callAzureOpenAI({ system, user }) {
           { role: "system", content: system },
           { role: "user", content: user }
         ],
-        temperature: 0.2,
-        max_tokens: 300
+        max_completion_tokens: AZURE_OPENAI_MAX_OUTPUT_TOKENS
       }),
       signal: controller.signal
     });
@@ -393,6 +442,52 @@ async function callAzureOpenAI({ system, user }) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function callAzureOpenAIResponses({ system, user, deployment }) {
+  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY || !deployment) return null;
+
+  const endpoint = AZURE_OPENAI_ENDPOINT.replace(/\/+$/g, "");
+  const url = `${endpoint}/openai/responses?api-version=${encodeURIComponent(AZURE_OPENAI_API_VERSION)}`;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), WRKFLO_ORCHESTRATE_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": AZURE_OPENAI_API_KEY
+      },
+      body: JSON.stringify({
+        model: deployment,
+        instructions: system,
+        input: user,
+        max_output_tokens: AZURE_OPENAI_MAX_OUTPUT_TOKENS
+      }),
+      signal: controller.signal
+    });
+    const text = await response.text();
+    let json = null;
+    try {
+      json = text ? JSON.parse(text) : null;
+    } catch {
+      json = null;
+    }
+    if (!response.ok) {
+      throw new Error(`azure_openai_responses_failed status=${response.status} body=${textExcerpt(text, 300)}`);
+    }
+    return strip(extractResponsesText(json));
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function callAzureOpenAI({ system, user, profile }) {
+  if (profile?.api === "responses") {
+    return callAzureOpenAIResponses({ system, user, deployment: profile.deployment });
+  }
+  return callAzureOpenAIChat({ system, user, deployment: profile?.deployment });
 }
 
 async function wrkfloOrchestrate({ request, context = "", conversationId = "" }) {
@@ -417,9 +512,17 @@ async function wrkfloOrchestrate({ request, context = "", conversationId = "" })
     .join("\n");
 
   try {
-    const answer = await callAzureOpenAI({ system, user });
+    const profile = selectAzureOpenAIProfile({ request: cleanRequest, context });
+    const answer = await callAzureOpenAI({ system, user, profile });
     if (answer) {
-      return { ok: true, provider: "azure_openai", answer, agentMessage: answer };
+      return {
+        ok: true,
+        provider: "azure_openai",
+        modelRoute: profile.route,
+        deployment: profile.deployment,
+        answer,
+        agentMessage: answer
+      };
     }
   } catch (err) {
     console.error("wrkflo_orchestrate_azure_error", String(err?.message || err));
@@ -919,6 +1022,9 @@ app.get("/health", async (req, res) => {
     date: isoNow(),
     sessionStore,
     sessionStoreOk,
+    azureOpenAIConfigured: Boolean(AZURE_OPENAI_ENDPOINT && AZURE_OPENAI_API_KEY && AZURE_OPENAI_DEFAULT_DEPLOYMENT),
+    azureOpenAIDefaultDeployment: AZURE_OPENAI_DEFAULT_DEPLOYMENT || null,
+    azureOpenAIModelRouterEnabled: AZURE_OPENAI_MODEL_ROUTER_ENABLED,
     handoffEnabled: Boolean(ELEVENLABS_API_KEY && HANDOFF_AGENT_ID && HANDOFF_AGENT_PHONE_NUMBER_ID)
   });
 });

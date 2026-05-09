@@ -7,12 +7,12 @@ Updated: 2026-05-09
 - Container App: `wrkflo-google-webhooks`
 - Resource Group: `wrkflo-ai-rg`
 - Runtime dependencies in `wrkflo-ai-rg`: `wrkflo-ai-env`, `cafe61646254acr`, `wrkflostate7091c86a`, `workspace-wrkfloairgAAkP`
-- Latest revision: `wrkflo-google-webhooks--0000077`
-- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`
+- Latest revision: `wrkflo-google-webhooks--0000078`
+- Image: `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`
 - Traffic: `100%` to latest revision
 - Secret refs in use: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`
 - `HANDOFF_AGENT_ID`: `agent_9601kjenmpbwewntb483he79nfvr`
-- Health endpoint observed healthy after the identity-backed GitHub deploy on 2026-05-09 at 21:53 UTC.
+- Health endpoint observed healthy after the router deployment on 2026-05-09 at 21:55 UTC.
 - Canonical GitHub repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`
 - Gateway source path: `services/eden-gateway`
 - Resource group tags applied on 2026-05-09: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
@@ -23,7 +23,7 @@ Updated: 2026-05-09
 - `LIVE_DEMO_DOC_OP_TIMEOUT_MS=12000`
 - Async start enabled
 - `/wrkflo-tools/*` and `/mcp` are deployed on the same Container App.
-- Azure OpenAI orchestration is configured with the `wrkflobiz` AI Services account and `gpt-4o` deployment.
+- Azure OpenAI orchestration is configured with the `wrkflobiz` AI Services account, default deployment `gpt-5.4-mini`, and model-router profile env vars.
 - `WRKFLO_SEARCH_ENDPOINT` is still not configured, so true web search still depends on the gateway's limited DuckDuckGo Instant Answer fallback or a future dedicated search provider.
 - Azure OpenAI endpoint is outside `wrkflo-ai-rg`: AI Services account `wrkflobiz` in resource group `Wrk`.
 - No plaintext secret values were returned by the live env check; credential-bearing settings are secret refs.
@@ -43,6 +43,7 @@ Updated: 2026-05-09
 - Main-branch Eden Gateway CI run `25612536913` succeeded.
 - Main-branch Deploy Eden Gateway run `25612536914` succeeded and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612536914-5e670b2`.
 - Manual Deploy Eden Gateway run `25612717893` succeeded after switching registry auth to managed identity and updated the Container App to image `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612717893-2eee8d0`.
+- A follow-up router deployment updated the live image to `cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-20260509215150-router`; this branch aligns that router source back into GitHub.
 
 ## Remaining infra follow-ups
 - Add production environment reviewers before routine production deploys.
