@@ -193,6 +193,7 @@ Verified Azure OpenAI image configuration:
 | `Wrk/wrkflobiz-images-poland` | AI Services account in Poland Central, S0 SKU, provisioning `Succeeded` |
 | `gpt-image-2` deployment | Model `gpt-image-2`, version `2026-04-21`, `GlobalStandard`, capacity 12, provisioning `Succeeded` |
 | Poland Central quota | `OpenAI.GlobalStandard.gpt-image-2` current 12, limit 12 requests per minute |
+| Quota support ticket | `WrkFloGptImage2Quota20260509T230433Z` opened on 2026-05-09, status `Open`, requesting 120 RPM |
 | Container App image env | `AZURE_OPENAI_IMAGE_ENDPOINT`, `AZURE_OPENAI_IMAGE_DEPLOYMENT`, `AZURE_OPENAI_IMAGE_API_VERSION`, and `AZURE_OPENAI_IMAGE_API_KEY` secret ref are configured |
 | Local Codex CLI | profile `wrkflo-image` maps `gpt-image-2` to provider `azure-wrkflo-image`; `AZURE_OPENAI_WRKFLO_IMAGE_API_KEY` is present in `~/.codex/.env` |
 | `openclaw-gateway-vm` | Managed identity has `Cognitive Services OpenAI User` on `wrkflobiz-images-poland`; `/etc/profile.d/wrkflo-azure-openai.sh` exports non-secret image endpoint/deployment/API version |

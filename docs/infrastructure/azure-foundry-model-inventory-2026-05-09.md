@@ -108,6 +108,12 @@ Poland Central quota check:
 |---|---:|---:|---|
 | `OpenAI.GlobalStandard.gpt-image-2` | 12 | 12 | Requests per minute |
 
+Quota increase request:
+
+| Ticket | Status | Requested limit |
+|---|---|---:|
+| `WrkFloGptImage2Quota20260509T230433Z` | Open | 120 RPM |
+
 ## Placement Notes
 
 - `Wrk/wrkflobiz` should be the enterprise Wrk.Flo/Eden default account.
@@ -115,7 +121,7 @@ Poland Central quota check:
 - `rg-moses-8586/moses-8586-resource` already has `gpt-5.5`, realtime models, and `sora-2`. Treat it as lab/advanced-model capacity unless intentionally promoted into enterprise routing.
 - `rg-isaac/isaac-resource` already has `gpt-image-2`, `sora-2`, `gpt-5.4`, `gpt-5.4-pro`, and image/video models. Treat it as Isaac/AINIME-owned unless intentionally shared.
 - Do not create duplicate Sora or realtime deployments in `Wrk/wrkflobiz` until project ownership and quota/cost boundaries are explicit.
-- Request more Poland Central `gpt-image-2` quota before production creative workloads; the current image deployment consumes the full 12 RPM quota.
+- Track Azure Support ticket `WrkFloGptImage2Quota20260509T230433Z` before production creative workloads; the current image deployment consumes the full 12 RPM quota and the requested limit is 120 RPM.
 
 ## Commands Used
 
