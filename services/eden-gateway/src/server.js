@@ -44,6 +44,11 @@ const AZURE_OPENAI_MODEL_ROUTER_ENABLED =
   String(process.env.AZURE_OPENAI_MODEL_ROUTER_ENABLED || "true").toLowerCase() !== "false";
 const AZURE_OPENAI_API_VERSION = process.env.AZURE_OPENAI_API_VERSION || "2025-04-01-preview";
 const AZURE_OPENAI_MAX_OUTPUT_TOKENS = safeInt(process.env.AZURE_OPENAI_MAX_OUTPUT_TOKENS, 300, 16, 1200);
+const AZURE_OPENAI_IMAGE_ENDPOINT = process.env.AZURE_OPENAI_IMAGE_ENDPOINT || "";
+const AZURE_OPENAI_IMAGE_API_KEY = process.env.AZURE_OPENAI_IMAGE_API_KEY || "";
+const AZURE_OPENAI_IMAGE_DEPLOYMENT = process.env.AZURE_OPENAI_IMAGE_DEPLOYMENT || "";
+const AZURE_OPENAI_IMAGE_API_VERSION = process.env.AZURE_OPENAI_IMAGE_API_VERSION || "2025-04-01-preview";
+const AZURE_OPENAI_IMAGE_TIMEOUT_MS = safeInt(process.env.AZURE_OPENAI_IMAGE_TIMEOUT_MS, 60000, 5000, 180000);
 const WRKFLO_ORCHESTRATE_TIMEOUT_MS = Number(process.env.WRKFLO_ORCHESTRATE_TIMEOUT_MS || 12000);
 
 const WRKFLO_TOOL_DEFINITIONS = [
@@ -73,6 +78,30 @@ const WRKFLO_TOOL_DEFINITIONS = [
         conversationId: { type: "string", description: "ElevenLabs conversation ID, if available." }
       },
       required: ["request"]
+    }
+  },
+  {
+    name: "wrkflo_image_generate",
+    description:
+      "Generate a WrkFlo-safe image through Azure OpenAI. Returns image metadata by default; set includeB64 only when the caller needs the raw b64_json image payload.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        prompt: { type: "string", description: "Image generation prompt." },
+        size: {
+          type: "string",
+          description: "Requested image size, such as 1024x1024, 1536x1024, or a gpt-image-2-compatible resolution.",
+          default: "1024x1024"
+        },
+        quality: { type: "string", enum: ["low", "medium", "high"], default: "medium" },
+        n: { type: "integer", minimum: 1, maximum: 4, default: 1 },
+        includeB64: {
+          type: "boolean",
+          default: false,
+          description: "When true, include b64_json for each returned image. Defaults false to keep voice/tool responses small."
+        }
+      },
+      required: ["prompt"]
     }
   },
   {
@@ -490,6 +519,93 @@ async function callAzureOpenAI({ system, user, profile }) {
   return callAzureOpenAIChat({ system, user, deployment: profile?.deployment });
 }
 
+function normalizeImageQuality(value) {
+  const quality = String(value || "medium").trim().toLowerCase();
+  return ["low", "medium", "high"].includes(quality) ? quality : "medium";
+}
+
+function normalizeImageSize(value) {
+  const size = String(value || "1024x1024").trim().toLowerCase();
+  return /^\d{2,5}x\d{2,5}$/.test(size) ? size : "1024x1024";
+}
+
+async function wrkfloImageGenerate({ prompt, size = "1024x1024", quality = "medium", n = 1, includeB64 = false }) {
+  const cleanPrompt = strip(prompt);
+  if (!cleanPrompt) {
+    return { ok: false, error: "missing_prompt", agentMessage: "I need an image prompt first." };
+  }
+  if (!AZURE_OPENAI_IMAGE_ENDPOINT || !AZURE_OPENAI_IMAGE_API_KEY || !AZURE_OPENAI_IMAGE_DEPLOYMENT) {
+    return {
+      ok: false,
+      error: "azure_openai_image_not_configured",
+      agentMessage: "Image generation is not configured in this WrkFlo gateway yet."
+    };
+  }
+
+  const endpoint = AZURE_OPENAI_IMAGE_ENDPOINT.replace(/\/+$/g, "");
+  const url = `${endpoint}/openai/deployments/${encodeURIComponent(
+    AZURE_OPENAI_IMAGE_DEPLOYMENT
+  )}/images/generations?api-version=${encodeURIComponent(AZURE_OPENAI_IMAGE_API_VERSION)}`;
+  const requestedSize = normalizeImageSize(size);
+  const requestedQuality = normalizeImageQuality(quality);
+  const requestedCount = safeInt(n, 1, 1, 4);
+
+  let response;
+  try {
+    response = await postJsonWithTimeout(
+      url,
+      {
+        prompt: cleanPrompt,
+        size: requestedSize,
+        quality: requestedQuality,
+        n: requestedCount
+      },
+      { "api-key": AZURE_OPENAI_IMAGE_API_KEY },
+      AZURE_OPENAI_IMAGE_TIMEOUT_MS
+    );
+
+    if (!response.ok) {
+      throw new Error(`azure_openai_image_failed status=${response.status} body=${textExcerpt(response.text, 300)}`);
+    }
+  } catch (err) {
+    console.error("wrkflo_image_generate_error", String(err?.message || err));
+    return {
+      ok: false,
+      error: "azure_openai_image_failed",
+      agentMessage: "Image generation is temporarily unavailable. I can keep the prompt for follow-up."
+    };
+  }
+
+  const images = Array.isArray(response.json?.data) ? response.json.data : [];
+  if (images.length === 0) {
+    return {
+      ok: false,
+      error: "azure_openai_image_empty_response",
+      agentMessage: "Image generation returned no images. I can retry with a simpler prompt."
+    };
+  }
+  const includePayload = toBool(includeB64);
+  return {
+    ok: true,
+    provider: "azure_openai_image",
+    deployment: AZURE_OPENAI_IMAGE_DEPLOYMENT,
+    size: requestedSize,
+    quality: requestedQuality,
+    count: images.length,
+    b64JsonIncluded: includePayload,
+    images: images.map((image, index) => {
+      const b64Json = typeof image?.b64_json === "string" ? image.b64_json : "";
+      return {
+        index,
+        revisedPrompt: image?.revised_prompt || image?.revisedPrompt || null,
+        b64JsonBytes: b64Json ? Buffer.byteLength(b64Json, "utf8") : 0,
+        ...(includePayload && b64Json ? { b64_json: b64Json } : {})
+      };
+    }),
+    agentMessage: `Generated ${images.length || requestedCount} image${(images.length || requestedCount) === 1 ? "" : "s"} with WrkFlo image generation.`
+  };
+}
+
 async function wrkfloOrchestrate({ request, context = "", conversationId = "" }) {
   const cleanRequest = strip(request);
   if (!cleanRequest) {
@@ -541,6 +657,7 @@ async function wrkfloOrchestrate({ request, context = "", conversationId = "" })
 async function executeWrkfloTool(name, args = {}) {
   if (name === "wrkflo_search") return wrkfloSearch(args);
   if (name === "wrkflo_orchestrate") return wrkfloOrchestrate(args);
+  if (name === "wrkflo_image_generate") return wrkfloImageGenerate(args);
   if (name === "wrkflo_notes_finalize") {
     const conversationId = strip(args.conversationId || args.conversation_id || "");
     if (!conversationId) {
@@ -1025,6 +1142,10 @@ app.get("/health", async (req, res) => {
     azureOpenAIConfigured: Boolean(AZURE_OPENAI_ENDPOINT && AZURE_OPENAI_API_KEY && AZURE_OPENAI_DEFAULT_DEPLOYMENT),
     azureOpenAIDefaultDeployment: AZURE_OPENAI_DEFAULT_DEPLOYMENT || null,
     azureOpenAIModelRouterEnabled: AZURE_OPENAI_MODEL_ROUTER_ENABLED,
+    azureOpenAIImageConfigured: Boolean(
+      AZURE_OPENAI_IMAGE_ENDPOINT && AZURE_OPENAI_IMAGE_API_KEY && AZURE_OPENAI_IMAGE_DEPLOYMENT
+    ),
+    azureOpenAIImageDeployment: AZURE_OPENAI_IMAGE_DEPLOYMENT || null,
     handoffEnabled: Boolean(ELEVENLABS_API_KEY && HANDOFF_AGENT_ID && HANDOFF_AGENT_PHONE_NUMBER_ID)
   });
 });

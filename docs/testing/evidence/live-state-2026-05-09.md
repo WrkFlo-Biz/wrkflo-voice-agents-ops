@@ -1,6 +1,6 @@
 # Live State Evidence
 
-Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC and 21:44 UTC
+Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC, 21:44 UTC, and 21:56 UTC
 
 This file captures checks and focused follow-up changes used to align repo docs with live GitHub, Azure, and ElevenLabs state. No secret values are included.
 
@@ -120,6 +120,9 @@ Plain env values observed:
 - `AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT=text-embedding-3-large`
 - `AZURE_OPENAI_MODEL_ROUTER_ENABLED=true`
 - `AZURE_OPENAI_MAX_OUTPUT_TOKENS=300`
+- `AZURE_OPENAI_IMAGE_ENDPOINT=https://wrkflobiz-images-poland.cognitiveservices.azure.com/`
+- `AZURE_OPENAI_IMAGE_DEPLOYMENT=gpt-image-2`
+- `AZURE_OPENAI_IMAGE_API_VERSION=2025-04-01-preview`
 
 Secret refs observed:
 
@@ -137,7 +140,7 @@ Secret refs observed:
 ACR password secret cleanup on 2026-05-09 at 22:14 UTC:
 
 - Removed old Container App ACR password secret `cafe61646254acrazurecrio-cafe61646254acr`.
-- Post-cleanup secret list contains only runtime app secrets: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, and `azure-openai-api-key`.
+- Current secret list contains only runtime app secrets: `google-oauth-client-id`, `google-oauth-client-secret`, `google-oauth-refresh-token`, `webhook-token`, `azure-storage-connection-string`, `elevenlabs-api-key`, `azure-openai-api-key`, and `azure-openai-image-api-key`.
 - Registry auth still uses `identity=system` with empty `passwordSecretRef`.
 - Container App provisioning returned to `Succeeded`; `wrkflo-google-webhooks--0000080` is latest/ready and receives `100%` traffic.
 - ACR `cafe61646254acr` admin user remains disabled.
@@ -167,6 +170,27 @@ Verified VM access posture:
 - `openclaw-gateway-vm` has Tailscale Serve routes for the OpenClaw gateway on `443` and `18789`.
 - No public NSG rules were removed because the current `174.232.30.68/32` rules remain the verified break-glass path until Tailscale SSH plus Azure Run Command or Serial Console are verified.
 - Detailed evidence: `docs/infrastructure/vm-access-hardening-state-2026-05-09.md`.
+
+Verified VM Azure OpenAI configuration:
+
+| VM | Managed identity | `wrkflobiz` role | Non-secret profile |
+|---|---|---|---|
+| `openclaw-gateway-vm` | `08adfb21-9499-44a8-8caf-befc7cde0105` | `Cognitive Services OpenAI User` | `/etc/profile.d/wrkflo-azure-openai.sh` |
+| `dev-workspace-vm` | `ea99b1fe-fe73-4156-b9f0-9de18eb7a5d4` | `Cognitive Services OpenAI User` | `/etc/profile.d/wrkflo-azure-openai.sh` |
+
+The VM profile file contains non-secret WrkFlo Azure OpenAI endpoint, deployment, router, and API version defaults. API keys were not written to the VMs.
+
+Verified Azure OpenAI image configuration:
+
+| Target | Evidence |
+|---|---|
+| `Wrk/wrkflobiz-images-poland` | AI Services account in Poland Central, S0 SKU, provisioning `Succeeded` |
+| `gpt-image-2` deployment | Model `gpt-image-2`, version `2026-04-21`, `GlobalStandard`, capacity 12, provisioning `Succeeded` |
+| Poland Central quota | `OpenAI.GlobalStandard.gpt-image-2` current 12, limit 12 requests per minute |
+| Container App image env | `AZURE_OPENAI_IMAGE_ENDPOINT`, `AZURE_OPENAI_IMAGE_DEPLOYMENT`, `AZURE_OPENAI_IMAGE_API_VERSION`, and `AZURE_OPENAI_IMAGE_API_KEY` secret ref are configured |
+| Local Codex CLI | profile `wrkflo-image` maps `gpt-image-2` to provider `azure-wrkflo-image`; `AZURE_OPENAI_WRKFLO_IMAGE_API_KEY` is present in `~/.codex/.env` |
+| `openclaw-gateway-vm` | Managed identity has `Cognitive Services OpenAI User` on `wrkflobiz-images-poland`; `/etc/profile.d/wrkflo-azure-openai.sh` exports non-secret image endpoint/deployment/API version |
+| `dev-workspace-vm` | Managed identity has `Cognitive Services OpenAI User` on `wrkflobiz-images-poland`; `/etc/profile.d/wrkflo-azure-openai.sh` exports non-secret image endpoint/deployment/API version |
 
 Verified WrkFlo placement:
 
@@ -280,6 +304,14 @@ az acr update --resource-group wrkflo-ai-rg --name cafe61646254acr --admin-enabl
 az containerapp secret remove --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --secret-names cafe61646254acrazurecrio-cafe61646254acr -o none
 az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --query "{provisioningState:properties.provisioningState,runningStatus:properties.runningStatus,latestRevision:properties.latestRevisionName,latestReadyRevisionName:properties.latestReadyRevisionName,registries:properties.configuration.registries,image:properties.template.containers[0].image,traffic:properties.configuration.ingress.traffic}" -o json
 curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
+az cognitiveservices account show --resource-group Wrk --name wrkflobiz-images-poland
+az cognitiveservices account deployment show --resource-group Wrk --name wrkflobiz-images-poland --deployment-name gpt-image-2
+az cognitiveservices usage list --location polandcentral
+az containerapp show --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks --query "{revision:properties.latestRevisionName,image:properties.template.containers[0].image,env:properties.template.containers[0].env[?contains(name, 'IMAGE') || contains(name, 'AZURE_OPENAI')]}" -o json
+az containerapp secret list --resource-group wrkflo-ai-rg --name wrkflo-google-webhooks
+codex --profile wrkflo-image --version
+az role assignment list --assignee <vm-principal-id> --scope <wrkflobiz-images-poland-resource-id>
+az vm run-command invoke --resource-group <rg> --name <vm> --command-id RunShellScript --scripts "grep -E 'AZURE_OPENAI_IMAGE|gpt-image-2|wrkflobiz-images-poland' /etc/profile.d/wrkflo-azure-openai.sh"
 az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
 az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
 az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
@@ -291,6 +323,9 @@ az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gate
 az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR --source-address-prefixes 174.232.30.68/32
 az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR2 --source-address-prefixes 174.232.30.68/32
 az network nsg rule update --resource-group dev-ws-westus2 --nsg-name dev-workspace-vmNSG --name default-allow-ssh --source-address-prefixes 174.232.30.68/32
+az vm identity assign --resource-group DEV-WS-WESTUS2 --name dev-workspace-vm
+az role assignment create --assignee-object-id <vm-principal-id> --assignee-principal-type ServicePrincipal --role "Cognitive Services OpenAI User" --scope <wrkflobiz-resource-id>
+az vm run-command invoke --resource-group <rg> --name <vm> --command-id RunShellScript --scripts <write-wrkflo-azure-openai-profile>
 az containerapp show --resource-group wrkflo --name wrkflo-orchestrator
 az containerapp show --resource-group wrkflo --name wrkflo-orchestrator-staging
 az webapp show --resource-group wrkflo --name wrkflo-app

@@ -25,8 +25,12 @@ Updated: 2026-05-09
 - Async start enabled
 - `/wrkflo-tools/*` and `/mcp` are deployed on the same Container App.
 - Azure OpenAI orchestration is configured with the `wrkflobiz` AI Services account, default deployment `gpt-5.4-mini`, and model-router profile env vars.
+- Azure image generation is configured with `wrkflobiz-images-poland` in `Wrk/polandcentral`, deployment `gpt-image-2`, and Container App env vars `AZURE_OPENAI_IMAGE_ENDPOINT`, `AZURE_OPENAI_IMAGE_DEPLOYMENT`, `AZURE_OPENAI_IMAGE_API_VERSION`, and secret ref `azure-openai-image-api-key`.
+- Local Codex has profile `wrkflo-image` using provider `azure-wrkflo-image`, endpoint `https://wrkflobiz-images-poland.cognitiveservices.azure.com/openai`, API version `2025-04-01-preview`, and env key `AZURE_OPENAI_WRKFLO_IMAGE_API_KEY`.
+- `openclaw-gateway-vm` and `dev-workspace-vm` have managed identities with `Cognitive Services OpenAI User` on `Wrk/wrkflobiz` and `Wrk/wrkflobiz-images-poland`; non-secret WrkFlo Azure OpenAI defaults are written in `/etc/profile.d/wrkflo-azure-openai.sh`.
 - `WRKFLO_SEARCH_ENDPOINT` is still not configured, so true web search still depends on the gateway's limited DuckDuckGo Instant Answer fallback or a future dedicated search provider.
 - Azure OpenAI endpoint is outside `wrkflo-ai-rg`: AI Services account `wrkflobiz` in resource group `Wrk`.
+- Azure OpenAI image endpoint is also outside `wrkflo-ai-rg`: AI Services account `wrkflobiz-images-poland` in resource group `Wrk`.
 - No plaintext secret values were returned by the live env check; credential-bearing settings are secret refs.
 
 ## GitHub deploy setup
@@ -49,6 +53,7 @@ Updated: 2026-05-09
 
 ## Remaining infra follow-ups
 - Add production environment reviewers before routine production deploys, after a distinct reviewer account or team exists.
+- Request additional Poland Central `gpt-image-2` quota before production creative workloads; current `OpenAI.GlobalStandard.gpt-image-2` quota is fully allocated at 12 of 12 RPM.
 - Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until live Eden/Eden v2 tool smoke tests pass after the GitHub-owned deployment.
 - Keep Eden on Azure Container Apps unless a concrete OS-level VM requirement appears.
 - See `cloud-exposure-review-2026-05-09-worker4.md` for remaining non-Eden ACR, HTTPS-only, and Postgres controlled-window work.

@@ -16,6 +16,7 @@ Purpose: identify which Azure AI Services accounts already have model deployment
 | `ai-isaac9924ai918303587699` | `ainime_ua` | `eastus2` | `https://ai-isaac9924ai918303587699.cognitiveservices.azure.com/` |
 | `isaac-8836-resource` | `rg-isaac` | `centralus` | `https://isaac-8836-resource.cognitiveservices.azure.com/` |
 | `isaac-1294-resource` | `rg-isaac` | `polandcentral` | `https://isaac-1294-resource.cognitiveservices.azure.com/` |
+| `wrkflobiz-images-poland` | `Wrk` | `polandcentral` | `https://wrkflobiz-images-poland.cognitiveservices.azure.com/` |
 
 ## Existing Deployments Before The New `wrkflobiz` Additions
 
@@ -93,12 +94,28 @@ These were added to make the enterprise `wrkflobiz` account directly usable for 
 | `o3` | `o3` | `2025-04-16` | `GlobalStandard` | 25 |
 | `text-embedding-3-large` | `text-embedding-3-large` | `1` | `GlobalStandard` | 120 |
 
+## New `Wrk/wrkflobiz-images-poland` Image Deployment Added On 2026-05-09
+
+This account was added because `Wrk/wrkflobiz` in East US did not expose `gpt-image-2` as a normal deployment target.
+
+| Deployment | Model | Version | SKU | Capacity | State |
+|---|---|---|---|---:|---|
+| `gpt-image-2` | `gpt-image-2` | `2026-04-21` | `GlobalStandard` | 12 | Succeeded |
+
+Poland Central quota check:
+
+| Quota | Current | Limit | Unit |
+|---|---:|---:|---|
+| `OpenAI.GlobalStandard.gpt-image-2` | 12 | 12 | Requests per minute |
+
 ## Placement Notes
 
 - `Wrk/wrkflobiz` should be the enterprise Wrk.Flo/Eden default account.
+- `Wrk/wrkflobiz-images-poland` is the enterprise Wrk.Flo/Eden image-generation account for `gpt-image-2`.
 - `rg-moses-8586/moses-8586-resource` already has `gpt-5.5`, realtime models, and `sora-2`. Treat it as lab/advanced-model capacity unless intentionally promoted into enterprise routing.
 - `rg-isaac/isaac-resource` already has `gpt-image-2`, `sora-2`, `gpt-5.4`, `gpt-5.4-pro`, and image/video models. Treat it as Isaac/AINIME-owned unless intentionally shared.
-- Do not create duplicate image, Sora, or realtime deployments in `Wrk/wrkflobiz` until project ownership and quota/cost boundaries are explicit.
+- Do not create duplicate Sora or realtime deployments in `Wrk/wrkflobiz` until project ownership and quota/cost boundaries are explicit.
+- Request more Poland Central `gpt-image-2` quota before production creative workloads; the current image deployment consumes the full 12 RPM quota.
 
 ## Commands Used
 
@@ -107,4 +124,7 @@ az cognitiveservices account list
 az cognitiveservices account deployment list --resource-group <rg> --name <account>
 az cognitiveservices account list-models --resource-group Wrk --name wrkflobiz
 az cognitiveservices usage list --location eastus
+az cognitiveservices account show --resource-group Wrk --name wrkflobiz-images-poland
+az cognitiveservices account deployment show --resource-group Wrk --name wrkflobiz-images-poland --deployment-name gpt-image-2
+az cognitiveservices usage list --location polandcentral
 ```

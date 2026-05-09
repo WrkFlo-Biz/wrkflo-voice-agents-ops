@@ -32,6 +32,7 @@ The gateway catalog and MCP endpoints use the same header when `WEBHOOK_TOKEN` i
 `/wrkflo-tools` behavior:
 - `wrkflo_search`: WrkFlo-owned search gateway. Uses `WRKFLO_SEARCH_ENDPOINT` when configured, otherwise falls back to DuckDuckGo Instant Answer and then a safe unavailable response.
 - `wrkflo_orchestrate`: routes complex requests through Azure OpenAI when `AZURE_OPENAI_*` vars are configured, selecting a configured deployment profile by request shape, otherwise returns a safe rule-router response.
+- `wrkflo_image_generate`: generates images through Azure OpenAI image generation when `AZURE_OPENAI_IMAGE_*` vars are configured. Returns metadata by default; callers must set `includeB64: true` to receive raw `b64_json`.
 - `wrkflo_notes_finalize`: wraps the existing notes finalizer for REST/MCP callers.
 
 `/mcp` implements a minimal JSON-RPC MCP tools surface for `initialize`, `tools/list`, and `tools/call`.
@@ -168,3 +169,19 @@ Local env vars:
 - `AZURE_OPENAI_MODEL_ROUTER_ENABLED` (default: `true`)
 - `AZURE_OPENAI_API_VERSION` (default: `2025-04-01-preview`)
 - `AZURE_OPENAI_MAX_OUTPUT_TOKENS` (default: `300`)
+- `AZURE_OPENAI_IMAGE_ENDPOINT` (optional; image-generation Azure OpenAI endpoint)
+- `AZURE_OPENAI_IMAGE_API_KEY` (optional)
+- `AZURE_OPENAI_IMAGE_DEPLOYMENT` (optional; for example `gpt-image-2`)
+- `AZURE_OPENAI_IMAGE_API_VERSION` (default: `2025-04-01-preview`)
+- `AZURE_OPENAI_IMAGE_TIMEOUT_MS` (default: `60000`)
+
+Image tool example:
+```json
+{
+  "prompt": "A polished WrkFlo product dashboard mockup for a local HVAC company",
+  "size": "1024x1024",
+  "quality": "medium",
+  "n": 1,
+  "includeB64": false
+}
+```
