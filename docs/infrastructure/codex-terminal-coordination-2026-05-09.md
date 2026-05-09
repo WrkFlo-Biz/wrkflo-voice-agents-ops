@@ -80,6 +80,7 @@ Do not repeat or roll back those completed changes unless new evidence shows a r
 Still gated:
 
 - Production environment required reviewers: blocked until a distinct reviewer account or team exists. `WrkFlo-Biz/wrkflo-voice-agents-ops` and `WrkFlo-Biz/wrkflo-orchestrator` production environments are branch-gated to `main`.
+- `WrkFlo-Biz/wrkflo-orchestrator` PR #13 is open for a workflow-level `github.ref == 'refs/heads/main'` production deploy guard. The branch is `codex/harden-production-workflow-gate`; do not duplicate this change. A follow-up test commit on that branch aligns Eden frontdoor phase expectations with the existing four-step workflow and fixes the OpenAPI no-body exception for `/v1/langflow/catalog/refresh`.
 - VM public NSG removal: blocked until at least one second operator device verifies Tailscale reachability and SSH.
 - Postgres firewall tightening: blocked until app DB egress or private networking is confirmed. Follow-up preflight found broad public egress sets: 31 possible IPs for AINIME App Service, 31 for `wrkflo-app`, 22 for `wrkflo-app-dev`, and 241 for the shared WrkFlo Container Apps environment, so private networking is preferred over a large public allowlist.
 - Non-Eden ACR admin disablement: blocked until App Services / Container App job migrate off admin credential auth. `wrkflo-rg/wrkfloacr` remains the lowest-risk candidate, but stale local `wrkfloacr` references were found in `/Users/mosestut/projects/wrkflo-orchestrator`, so owner confirmation is still required.
