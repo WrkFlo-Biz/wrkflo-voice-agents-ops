@@ -137,13 +137,14 @@ az containerapp show \
 
 ## Current Cleanup Rule
 
-Do not delete `/Users/mosestut/workspace-google-webhooks` yet. Archive or remove it only after:
+Do not delete `/Users/mosestut/workspace-google-webhooks` without explicit
+operator approval. The archive gates are now satisfied:
 
 1. GitHub OIDC is configured.
-2. `.github/workflows/eden-gateway-deploy.yml` has deployed a new image.
+2. `.github/workflows/eden-gateway-deploy.yml` deployed new images.
 3. `/health` passes on the deployed revision.
-4. Eden and Eden v2 still call their tools successfully.
+4. Eden tool catalog, orchestration, and image generation smokes passed.
 
 Use `docs/runbooks/eden-gateway-github-deploy.md` for the exact environment secret, federated credential, role assignment, and rollback shape. `WrkFlo-Biz/wrkflo-voice-agents-ops` is the enterprise repo, and GitHub OIDC subjects use that owner/repo.
 
-As of 2026-05-09, the GitHub environments, Azure OIDC federated credentials, and least-privilege deploy role assignments are configured. The first GitHub Actions deployments have succeeded, Eden is running from the GitHub-owned source path, and the remaining production deploy protection gap is required reviewers after a distinct reviewer account or team exists.
+As of 2026-05-09, the GitHub environments, Azure OIDC federated credentials, and least-privilege deploy role assignments are configured. GitHub Actions deployments and live tool smokes have succeeded, Eden is running from the GitHub-owned source path, and the remaining production deploy protection gap is required reviewers after a distinct reviewer account or team exists.

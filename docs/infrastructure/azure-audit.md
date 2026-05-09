@@ -55,7 +55,7 @@ Updated: 2026-05-09
 ## Remaining infra follow-ups
 - Add production environment reviewers before routine production deploys, after a distinct reviewer account or team exists.
 - Track Azure Support ticket `WrkFloGptImage2Quota20260509T230433Z`, opened on 2026-05-09, requesting Poland Central `gpt-image-2` quota increase from 12 to 120 RPM before production creative workloads.
-- Keep `/Users/mosestut/workspace-google-webhooks` as rollback/reference until live Eden/Eden v2 tool smoke tests pass after the GitHub-owned deployment.
+- `/Users/mosestut/workspace-google-webhooks` is archive-eligible after successful GitHub-owned deploys and live Eden tool smokes; keep it in place until explicit operator approval to move or delete the local rollback copy.
 - Keep Eden on Azure Container Apps unless a concrete OS-level VM requirement appears.
 - See `cloud-exposure-review-2026-05-09-worker4.md` for remaining non-Eden ACR, HTTPS-only, and Postgres controlled-window work.
 - See `vm-access-hardening-state-2026-05-09.md` for the deferred VM public NSG removal checklist.

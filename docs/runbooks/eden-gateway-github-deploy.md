@@ -18,8 +18,8 @@ Azure Container App: wrkflo-google-webhooks
 ACR: cafe61646254acr
 Image repository: wrkflo-google-webhooks
 Health URL: https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
-Live revision: wrkflo-google-webhooks--0000080
-Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25612879618-17ebb7d
+Live revision: wrkflo-google-webhooks--0000081
+Live image: cafe61646254acr.azurecr.io/wrkflo-google-webhooks:gateway-25613838990-f15f370
 ```
 
 ## Required GitHub Environments
@@ -159,13 +159,16 @@ ruby -e 'require "yaml"; ARGV.each { |f| YAML.load_file(f); puts "ok #{f}" }' .g
 
 ## Rollback
 
-The legacy local deployment source remains:
+The legacy local deployment source remains as an archive candidate:
 
 ```text
 /Users/mosestut/workspace-google-webhooks
 ```
 
-Do not delete it until GitHub deploy has succeeded and live Eden/Eden v2 tool tests pass.
+GitHub deploy has succeeded and live Eden tool tests passed on 2026-05-09. Do
+not delete or move this folder without explicit operator approval; if approved,
+run `scripts/local/plan-eden-path-cleanup.sh` first and keep a rollback archive
+until the next production deploy is proven healthy.
 
 To roll back the Container App image, use the previous known-good image from `docs/infrastructure/azure-audit.md`:
 
@@ -190,6 +193,7 @@ After GitHub deployment works:
 2. Keep the Container App system-assigned identity and `AcrPull` assignment in place.
 3. Keep ACR admin disabled for `cafe61646254acr`.
 4. Done 2026-05-09: removed old unused Container App ACR password secret `cafe61646254acrazurecrio-cafe61646254acr` after confirming registry auth uses `identity=system`, `passwordSecretRef` is empty, ACR admin is disabled, and registry access for stopped rollback revisions goes through the app's managed identity.
+5. Done 2026-05-09: live `/wrkflo-tools` catalog, `wrkflo_orchestrate`, and `wrkflo_image_generate` smoke checks passed after the GitHub-owned deployment. The legacy local folder is now archive-eligible pending operator approval.
 
 If registry auth ever needs to be repaired, prefer restoring the managed-identity path:
 
