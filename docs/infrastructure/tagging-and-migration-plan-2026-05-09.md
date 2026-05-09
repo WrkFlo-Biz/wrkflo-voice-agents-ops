@@ -70,6 +70,7 @@ These should be done in controlled windows because they can affect runtime acces
 4. GitHub:
    - Done 2026-05-09: protect `main` for checked production repos.
    - Done 2026-05-09: require one approving PR review for non-admin paths, dismiss stale reviews, block force-pushes/deletions, and require conversation resolution.
+   - Done 2026-05-09: limit `WrkFlo-Biz/wrkflo-voice-agents-ops` and `WrkFlo-Biz/wrkflo-orchestrator` production environment deployments to branch `main`.
    - Remaining: add production environment reviewers.
 5. ACR:
    - Move workloads to managed identity pulls.

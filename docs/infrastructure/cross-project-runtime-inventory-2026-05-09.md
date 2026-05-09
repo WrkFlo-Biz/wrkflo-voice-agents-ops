@@ -103,4 +103,4 @@ All checked `main` branches are protected as of 2026-05-09:
 - `dev-workspace`
 - `openclaw-prod`
 
-Remaining GitHub hardening: add production environment reviewers where routine production deployment should require human approval.
+Remaining GitHub hardening: add production environment reviewers where routine production deployment should require human approval. `wrkflo-voice-agents-ops` and `wrkflo-orchestrator` production environments are branch-gated to `main`; reviewer protection remains blocked until a distinct reviewer account or team exists.
