@@ -4,7 +4,7 @@ Date: 2026-05-09
 
 Purpose: keep WrkFlo-Biz project folders, GitHub repos, Azure runtimes, and local paths aligned before provisioning new Container Apps or VMs.
 
-This inventory is read-only evidence. Do not treat it as approval to move compute, delete resources, rotate secrets, or close public access without an explicit change window.
+This inventory started as read-only evidence. Follow-up on 2026-05-09 applied metadata tags and restricted VM NSG ingress for the focused Eden, WrkFlo, Dev Workspace, OpenClaw, and Global Sentinel scope. Do not treat it as approval to move compute, delete resources, or rotate secrets without an explicit change window.
 
 ## GitHub Enterprise Repos
 
@@ -37,11 +37,11 @@ Branch protection status on `main` was `unprotected` for all six repos during th
 
 | Project | Azure groups | Current runtime surfaces | Best-fit direction |
 |---|---|---|---|
-| Eden voice gateway | `wrkflo-ai-rg` | Container App `wrkflo-google-webhooks`, ACR, storage, Log Analytics | Keep on Container Apps; no VM needed |
-| WrkFlo core/orchestrator | `wrkflo`, `wrkflo-dev`, review-only `wrkflo-rg` | Container Apps, App Service, Postgres, Redis, ACR, monitoring | Keep orchestrator on Container Apps; keep app on App Service unless container consolidation is planned |
-| OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | VM, App Service, Container App job, ACR, storage, snapshots, monitoring | Keep VM only for OS-level/trading gateway needs; move dashboards/APIs/jobs to Container Apps where possible |
+| Eden voice gateway | `wrkflo-ai-rg` | Container App `wrkflo-google-webhooks`, ACR, storage, Log Analytics | Keep on Container Apps; no VM needed; RG tagged `project=eden-voice` |
+| WrkFlo core/orchestrator | `wrkflo`, `wrkflo-dev`, review-only `wrkflo-rg` | Container Apps, App Service, Postgres, Redis, ACR, monitoring | Keep orchestrator on Container Apps; keep app on App Service unless container consolidation is planned; active RGs tagged `project=wrkflo-core` |
+| OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | VM, App Service, Container App job, ACR, storage, snapshots, monitoring | Keep VM only for OS-level/trading gateway needs; move dashboards/APIs/jobs to Container Apps where possible; focused RGs tagged |
 | AINIME / Isaac | `ainime_ua`, `rg-isaac` | App Services, Postgres, ACR, ML workspaces/endpoints, AI Services | Keep web/API on App Service short-term; consider Container Apps only after canonical repo is known |
-| Dev workspace | `dev-ws-westus2`, `DEV-WS-WESTUS2` | VM and related network/disk/extensions | VM is appropriate for interactive development; harden SSH and document boot/reconnect |
+| Dev workspace | `dev-ws-westus2`, `DEV-WS-WESTUS2` | VM and related network/disk/extensions | VM is appropriate for interactive development; SSH restricted to trusted CIDR and RG tagged |
 | AI lab resources | `Wrk.Flo`, `Wrk`, `wrk`, `rg-moses-8586` | AI Services, Key Vault, projects, monitoring | Tag as lab/review; avoid production dependencies until owner and repo are explicit |
 | Quarantine candidates | `comfyui`, `rg-comfy`, stale `wrkflo-rg` pieces | Empty/duplicate/failure resources | Tag and monitor before deletion |
 
@@ -49,16 +49,16 @@ Branch protection status on `main` was `unprotected` for all six repos during th
 
 ### VMs
 
-`openclaw-gateway-vm` is running with public IP `20.124.180.8`. Its NSG allows inbound traffic from `*` to:
+`openclaw-gateway-vm` is running with public IP `20.124.180.8`. On 2026-05-09 its NSG inbound rules were changed from `*` to `174.232.30.68/32` for:
 
 - TCP `22`
 - TCP `8501`
 - TCP `5000`
 - TCP `5001`
 
-`dev-workspace-vm` is running with public IP `20.230.203.79`. Its NSG allows inbound TCP `22` from `*`.
+`dev-workspace-vm` is running with public IP `20.230.203.79`. On 2026-05-09 its NSG inbound TCP `22` rule was changed from `*` to `174.232.30.68/32`.
 
-These should be restricted to trusted IPs, VPN, Bastion, or removed during a controlled access window.
+Next hardening step: move these access paths behind Tailscale, Bastion, or another stable trusted network path so they do not depend on a changing operator egress IP.
 
 ### Postgres
 

@@ -31,14 +31,14 @@ Use lab/review when ownership or product dependency is unclear.
 
 | Project | Recommended runtime | Rationale | Next action |
 |---|---|---|---|
-| Eden voice gateway | Existing Container App `wrkflo-google-webhooks` | Webhook/MCP/tool gateway is stateless enough and already healthy on Container Apps | Prove GitHub deploy, then retire local-only deployment path |
+| Eden voice gateway | Existing Container App `wrkflo-google-webhooks` | Webhook/MCP/tool gateway is stateless enough and already healthy on Container Apps | Keep on Container Apps; prove GitHub deploy, then retire local-only deployment path |
 | WrkFlo orchestrator | Existing Container Apps `wrkflo-orchestrator` and `wrkflo-orchestrator-staging` | API/orchestration surface fits Container Apps; has Redis/Postgres external state | Keep; improve secret refs, branch protection, staging parity |
-| WrkFlo web app | Existing App Service `wrkflo-app` | Running with HTTPS-only and custom domain; migration not urgent | Keep short-term; revisit if consolidating all app containers under Container Apps |
+| WrkFlo web app | Existing App Service `wrkflo-app` | Running with HTTPS-only and custom domain; migration not urgent | Keep on App Service for now; revisit only if consolidating all app containers under Container Apps |
 | WrkFlo dev app | Existing App Service `wrkflo-app-dev` | Running dev surface with HTTPS-only | Keep; align repo/deploy ownership |
-| OpenClaw gateway | VM for gateway/trading pieces only | Public ports and possible IBKR/trading gateway needs may require OS-level runtime | Harden NSG first; split dashboards/API into Container Apps later |
+| OpenClaw gateway | VM for gateway/trading pieces only | Possible IBKR/trading gateway needs may require OS-level runtime | NSG restricted to trusted CIDR on 2026-05-09; split dashboards/API into Container Apps later |
 | Global Sentinel dashboard/API | Container Apps preferred | Dashboard/API/job workloads do not inherently need VM if containerized | Plan extraction from OpenClaw VM after source/runtime owner review |
 | Global Sentinel quantum/research jobs | Container Apps jobs or Azure ML jobs | Batch/research workloads fit jobs better than always-on VM | Keep `quantum-research-job`; document trigger/owner |
-| Dev workspace | VM | Interactive dev box is a VM-shaped workload | Keep VM; restrict SSH and document Tailscale/Bastion path |
+| Dev workspace | VM | Interactive dev box is a VM-shaped workload | Keep VM; SSH restricted to trusted CIDR on 2026-05-09; document Tailscale/Bastion path |
 | AINIME web/API | Existing App Services short-term | Running production surfaces; canonical repo is unclear | Do not migrate until repo owner/deploy path is known; enable HTTPS-only later |
 | AINIME ML endpoint | Azure ML online endpoint | Model serving already lives in Azure ML | Keep; tag and document owner |
 | Isaac AI lab | Lab/review AI Services/App Service | Product boundary unclear | Tag as lab/review; do not add new runtime until repo is known |
@@ -69,11 +69,20 @@ These are the only new/provisioning candidates that look reasonable after the cu
 3. Managed-identity ACR pull for Eden.
    - Not a new app; it replaces ACR admin credentials with system-assigned identity and `AcrPull`.
 
+## Applied 2026-05-09
+
+- Confirmed Eden has no VM requirement and should remain on Container Apps.
+- Confirmed `wrkflo-orchestrator` and `wrkflo-orchestrator-staging` are single-revision Container Apps.
+- Confirmed `wrkflo-app` is a running Linux container App Service with HTTPS-only enabled.
+- Restricted `dev-workspace-vm` SSH ingress to `174.232.30.68/32`.
+- Restricted `openclaw-gateway-vm` SSH, dashboard, and IBKR ingress ports to `174.232.30.68/32`.
+- Tagged the focused resource groups: `wrkflo-ai-rg`, `wrkflo`, `wrkflo-dev`, `openclaw-rg`, `gs-dev-rg`, and `dev-ws-westus2`.
+
 ## Controlled-Window Changes
 
 These are important but should not be applied blind:
 
-- Restrict world-open VM NSG rules.
+- Replace temporary trusted-IP VM ingress with Tailscale, Bastion, VPN, or another stable access path.
 - Remove broad Postgres firewall rules.
 - Disable ACR admin users.
 - Enable HTTPS-only on AINIME/Isaac App Services.

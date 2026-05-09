@@ -1,8 +1,8 @@
 # Live State Evidence
 
-Observed: 2026-05-09 20:52 UTC
+Observed: 2026-05-09 20:52 UTC; follow-up checks at 2026-05-09 21:35 UTC
 
-This file captures read-only checks used to align repo docs with live GitHub, Azure, and ElevenLabs state. No secret values are included.
+This file captures checks and focused follow-up changes used to align repo docs with live GitHub, Azure, and ElevenLabs state. No secret values are included.
 
 ## GitHub
 
@@ -101,6 +101,29 @@ Secret refs observed:
 
 `WRKFLO_SEARCH_ENDPOINT` is not configured.
 
+## Focused Infrastructure Follow-up
+
+Applied on 2026-05-09:
+
+- `wrkflo-ai-rg` tagged for Eden ownership: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
+- `wrkflo` and `wrkflo-dev` tagged for WrkFlo core ownership with `repo=WrkFlo-Biz/wrkflo-orchestrator`.
+- `openclaw-rg` tagged for OpenClaw production ownership with `repo=WrkFlo-Biz/openclaw-prod`.
+- `gs-dev-rg` tagged for Global Sentinel dev/review ownership with `repo=WrkFlo-Biz/global-sentinel`.
+- `dev-ws-westus2` tagged for Dev Workspace ownership with `repo=WrkFlo-Biz/dev-workspace`.
+
+Verified VM NSG hardening:
+
+| VM | Public IP | Rule change |
+|---|---|---|
+| `openclaw-gateway-vm` | `20.124.180.8` | TCP `22`, `8501`, `5000`, and `5001` now allow source `174.232.30.68/32` instead of `*` |
+| `dev-workspace-vm` | `20.230.203.79` | TCP `22` now allows source `174.232.30.68/32` instead of `*` |
+
+Verified WrkFlo placement:
+
+- `wrkflo-orchestrator` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:c377b3a`.
+- `wrkflo-orchestrator-staging` remains a single-revision Azure Container App using image `wrkfloacr637a2eee.azurecr.io/wrkflo-orchestrator:62de71c8`.
+- `wrkflo-app` remains a running Linux container App Service with hostnames `app.wrkflo.biz` and `wrkflo-app.azurewebsites.net`; HTTPS-only is enabled.
+
 ## Azure GitHub OIDC
 
 - App registration: `wrkflo-eden-gateway-github-actions`
@@ -140,4 +163,18 @@ az monitor log-analytics workspace show --resource-group wrkflo-ai-rg --workspac
 az cognitiveservices account list --query "[?contains(endpoint || '', 'wrkflobiz') || name=='wrkflobiz']"
 az ad app federated-credential list --id 05605d80-1198-40f5-8767-aa6be2eaddb8
 curl -fsS https://wrkflo-google-webhooks.jollymeadow-ec18f10e.eastus.azurecontainerapps.io/health
+az group update --name wrkflo-ai-rg --set tags.project=eden-voice tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-voice-agents-ops tags.managed_by=github-actions-target tags.lifecycle=active
+az group update --name wrkflo --set tags.project=wrkflo-core tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
+az group update --name wrkflo-dev --set tags.project=wrkflo-core tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/wrkflo-orchestrator tags.managed_by=mixed-github-actions-and-azure tags.lifecycle=active
+az group update --name openclaw-rg --set tags.project=openclaw tags.environment=production tags.owner=moses tags.repo=WrkFlo-Biz/openclaw-prod tags.managed_by=manual-azure-cli tags.lifecycle=active
+az group update --name gs-dev-rg --set tags.project=global-sentinel tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/global-sentinel tags.managed_by=manual-azure-cli tags.lifecycle=review
+az group update --name dev-ws-westus2 --set tags.project=dev-workspace tags.environment=dev tags.owner=moses tags.repo=WrkFlo-Biz/dev-workspace tags.managed_by=manual-azure-cli tags.lifecycle=active
+az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name default-allow-ssh --source-address-prefixes 174.232.30.68/32
+az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name allow-dashboard --source-address-prefixes 174.232.30.68/32
+az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR --source-address-prefixes 174.232.30.68/32
+az network nsg rule update --resource-group openclaw-rg --nsg-name openclaw-gateway-vmNSG --name AllowIBKR2 --source-address-prefixes 174.232.30.68/32
+az network nsg rule update --resource-group dev-ws-westus2 --nsg-name dev-workspace-vmNSG --name default-allow-ssh --source-address-prefixes 174.232.30.68/32
+az containerapp show --resource-group wrkflo --name wrkflo-orchestrator
+az containerapp show --resource-group wrkflo --name wrkflo-orchestrator-staging
+az webapp show --resource-group wrkflo --name wrkflo-app
 ```

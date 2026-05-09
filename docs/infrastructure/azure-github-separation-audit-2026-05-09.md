@@ -2,7 +2,7 @@
 
 Date: 2026-05-09
 
-Scope: Azure subscription `Azure subscription 1`, GitHub org `WrkFlo-Biz`, and relevant local repos. The original audit was read-only; follow-up work on 2026-05-09 configured Eden GitHub OIDC and updated the live Container App Azure OpenAI env.
+Scope: Azure subscription `Azure subscription 1`, GitHub org `WrkFlo-Biz`, and relevant local repos. The original audit was read-only; follow-up work on 2026-05-09 configured Eden GitHub OIDC, updated the live Container App Azure OpenAI env, tagged focused resource groups, and restricted focused VM NSG ingress.
 
 ## Executive Summary
 
@@ -16,9 +16,9 @@ The broader cloud estate should be separated by project, connected only through 
 |---|---|---|---|
 | Eden voice gateway | `wrkflo-ai-rg` | `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway`; legacy rollback copy at `/Users/mosestut/workspace-google-webhooks` | Runtime isolated, GitHub OIDC configured, first workflow deploy still unproven |
 | WrkFlo core / orchestrator / Langflow | `wrkflo`, `wrkflo-rg`, `wrkflo-dev` | `WrkFlo-Biz/wrkflo-orchestrator` | Mixed; `wrkflo` active, `wrkflo-rg` looks duplicate/future |
-| OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | `WrkFlo-Biz/openclaw-prod`, `global-sentinel`, `global-sentinel-azure-quantum` | Strong VM ownership, mixed research resources |
+| OpenClaw / Global Sentinel | `openclaw-rg`, `OPENCLAW-RG`, `gs-dev-rg` | `WrkFlo-Biz/openclaw-prod`, `global-sentinel`, `global-sentinel-azure-quantum` | Strong VM ownership, mixed research resources; focused RGs tagged |
 | AINIME / Isaac | `ainime_ua`, `rg-isaac` | No canonical visible `WrkFlo-Biz` repo found | Needs owner/repo decision |
-| Dev workspace | `dev-ws-westus2`, `DEV-WS-WESTUS2` | `WrkFlo-Biz/dev-workspace` | Isolated, but public SSH exposed |
+| Dev workspace | `dev-ws-westus2`, `DEV-WS-WESTUS2` | `WrkFlo-Biz/dev-workspace` | Isolated; public SSH restricted to trusted CIDR on 2026-05-09 |
 | AI lab / shared experiments | `Wrk.Flo`, `Wrk`, `wrk`, `rg-moses-8586` | No canonical visible repo found | Needs tags, budget guardrails, owner review |
 | Platform misc | `NetworkWatcherRG`, `VisualStudioOnline-*` | Azure-managed/misc | Mostly leave alone; review misplaced storage |
 
@@ -34,16 +34,17 @@ The broader cloud estate should be separated by project, connected only through 
 | `ainime-web` App Service | `ainime_ua` | `ainime.io`, `www.ainime.io`, HTTPS-only disabled |
 | `ainime-api` App Service | `ainime_ua` | Azure default hostname, HTTPS-only disabled |
 | `Isaac` App Service | `openclaw-rg` | Azure default hostname, HTTPS-only disabled |
-| `openclaw-gateway-vm` | `OPENCLAW-RG` / `openclaw-rg` | Public IP; NSG allows SSH and app ports from any source |
-| `dev-workspace-vm` | `dev-ws-westus2` / `DEV-WS-WESTUS2` | Public IP; NSG allows SSH from any source |
+| `openclaw-gateway-vm` | `OPENCLAW-RG` / `openclaw-rg` | Public IP; NSG allows SSH, dashboard, and IBKR ports only from `174.232.30.68/32` |
+| `dev-workspace-vm` | `dev-ws-westus2` / `DEV-WS-WESTUS2` | Public IP; NSG allows SSH only from `174.232.30.68/32` |
 | `quantum-research-job` | `OPENCLAW-RG` | Manual Container Apps job |
 | `seedance2` ML endpoint | `ainime_ua` | Key-auth inference endpoint |
 
 ## Critical Findings
 
-1. Public VM ingress is too broad.
-   - `openclaw-gateway-vm` allows inbound `22`, `8501`, `5000`, and `5001` from any source.
-   - `dev-workspace-vm` allows inbound `22` from any source.
+1. Public VM ingress was too broad.
+   - Mitigated 2026-05-09: `openclaw-gateway-vm` now allows inbound `22`, `8501`, `5000`, and `5001` only from `174.232.30.68/32`.
+   - Mitigated 2026-05-09: `dev-workspace-vm` now allows inbound `22` only from `174.232.30.68/32`.
+   - Remaining: replace temporary trusted-IP access with Tailscale, Bastion, VPN, or another stable access path.
 
 2. Some production credentials appear as plain app/container env settings.
    - `wrkflo-orchestrator` and staging have credential-looking env names that should be secret refs or Key Vault references.
@@ -137,6 +138,17 @@ Suggested Eden tags:
 - `managed_by=github-actions-target`
 - `lifecycle=active`
 
+Applied 2026-05-09 to focused groups:
+
+| Resource group | Applied tags |
+|---|---|
+| `wrkflo-ai-rg` | `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active` |
+| `wrkflo` | `project=wrkflo-core`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-orchestrator`, `managed_by=mixed-github-actions-and-azure`, `lifecycle=active` |
+| `wrkflo-dev` | `project=wrkflo-core`, `environment=dev`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-orchestrator`, `managed_by=mixed-github-actions-and-azure`, `lifecycle=active` |
+| `openclaw-rg` | `project=openclaw`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/openclaw-prod`, `managed_by=manual-azure-cli`, `lifecycle=active` |
+| `gs-dev-rg` | `project=global-sentinel`, `environment=dev`, `owner=moses`, `repo=WrkFlo-Biz/global-sentinel`, `managed_by=manual-azure-cli`, `lifecycle=review` |
+| `dev-ws-westus2` | `project=dev-workspace`, `environment=dev`, `owner=moses`, `repo=WrkFlo-Biz/dev-workspace`, `managed_by=manual-azure-cli`, `lifecycle=active` |
+
 ### Phase 2: Put Eden Under GitHub Ownership
 
 - Use `WrkFlo-Biz/wrkflo-voice-agents-ops/services/eden-gateway` as the GitHub-owned source.
@@ -148,7 +160,7 @@ Suggested Eden tags:
 
 ### Phase 3: Hardening
 
-- Restrict VM NSG public ingress.
+- Replace temporary trusted-IP VM ingress with Tailscale, Bastion, VPN, or another stable access path.
 - Remove all-source Postgres firewall rules.
 - Move plain credential env settings to secret refs or Key Vault refs.
 - Enable branch protection and production environment reviewers.

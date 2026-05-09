@@ -19,7 +19,7 @@ Required tags:
 | `managed_by` | Management path | `github-actions`, `manual-azure-cli`, `azure-managed` |
 | `lifecycle` | Resource state | `active`, `review`, `quarantine`, `decommission-candidate` |
 
-Initial resource-group tag map:
+Initial resource-group tag map. Tags were applied on 2026-05-09 for the focused Eden, WrkFlo, OpenClaw/Global Sentinel, and Dev Workspace groups shown as `active` or `review` below; other groups still need owner review before tagging.
 
 | Resource group | `project` | `environment` | `lifecycle` | Notes |
 |---|---|---|---|---|
@@ -58,8 +58,9 @@ Steps:
 These should be done in controlled windows because they can affect runtime access.
 
 1. Restrict public VM ingress:
-   - `openclaw-gateway-vm`: remove world-open SSH and app ports or restrict to trusted IP/Bastion/VPN.
-   - `dev-workspace-vm`: restrict or remove public SSH.
+   - Done 2026-05-09: `openclaw-gateway-vm` SSH, dashboard, and IBKR ports now allow `174.232.30.68/32` instead of `*`.
+   - Done 2026-05-09: `dev-workspace-vm` SSH now allows `174.232.30.68/32` instead of `*`.
+   - Remaining: replace temporary trusted-IP access with Tailscale, Bastion, VPN, or another stable trusted path.
 2. Database exposure:
    - Remove all-source firewall from `ainime-server2`.
    - Replace public/allow-Azure access for `wrkflo-db` with app-specific access or private networking.
@@ -93,8 +94,8 @@ Short version:
 - Eden stays on Container Apps; no VM needed.
 - WrkFlo orchestrator stays on Container Apps.
 - WrkFlo web app can stay on App Service until container consolidation is intentional.
-- Dev workspace stays a VM, but SSH must be restricted.
-- OpenClaw keeps a VM only for OS-level gateway/trading dependencies; dashboards/APIs should move toward Container Apps.
+- Dev workspace stays a VM; SSH was restricted to the trusted operator CIDR on 2026-05-09.
+- OpenClaw keeps a VM only for OS-level gateway/trading dependencies; its public ingress was restricted on 2026-05-09 and dashboards/APIs should move toward Container Apps.
 - AINIME/Isaac should not get new Container Apps until canonical repo ownership is known.
 
 ## Quarantine Candidates

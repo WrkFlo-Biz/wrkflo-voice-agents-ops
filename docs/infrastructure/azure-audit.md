@@ -15,6 +15,7 @@ Updated: 2026-05-09
 - Health endpoint observed healthy on 2026-05-09 at 20:52 UTC.
 - Canonical GitHub repo: `WrkFlo-Biz/wrkflo-voice-agents-ops`
 - Gateway source path: `services/eden-gateway`
+- Resource group tags applied on 2026-05-09: `project=eden-voice`, `environment=production`, `owner=moses`, `repo=WrkFlo-Biz/wrkflo-voice-agents-ops`, `managed_by=github-actions-target`, `lifecycle=active`.
 
 ## Notable runtime settings
 - `LIVE_DEMO_START_TIMEOUT_MS=15000`
@@ -37,8 +38,8 @@ Updated: 2026-05-09
 - Azure roles:
   - `Container Apps Contributor` on `wrkflo-ai-rg`
   - `AcrPush` on `cafe61646254acr`
-- No GitHub Actions runs are currently visible for the repo because the new workflow files are not merged/pushed yet.
-- First GitHub Actions deployment from this repo is still unproven until `.github/workflows/eden-gateway-deploy.yml` is merged/pushed and run.
+- PR CI is visible and green for branch `codex/reconcile-voice-agent-docs`.
+- First GitHub Actions deployment from this repo is still unproven until `.github/workflows/eden-gateway-deploy.yml` is merged and run.
 
 ## Remaining infra follow-ups
 - Merge/push the repo-owned gateway source and run `.github/workflows/eden-gateway-deploy.yml`.
